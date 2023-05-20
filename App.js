@@ -7,9 +7,11 @@ import {
   SafeAreaView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from "react-native";
 import CryptoCurrencyList from "./CryptoCurrencyList";
+import { MaterialIcons } from "@expo/vector-icons";
 
 const backgroundImage = require("./assets/images/tsunami-home.png");
 const logo = require("./assets/logo/Logo3.png");
@@ -30,17 +32,21 @@ export default function App() {
       style={styles.background}
     >
       <SafeAreaView>
-        <View
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            marginVertical: 12,
-            marginHorizontal: 10,
-          }}
-        >
-          <Image source={logo} style={styles.logo} />
-          <Text style={styles.title}>TSUNAMI</Text>
+        <View style={styles.header}>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+            }}
+          >
+            <Image source={logo} style={styles.logo} />
+            <Text style={styles.title}>TSUNAMI</Text>
+          </View>
+          <TouchableOpacity onPress={() => console.log("pressing account!")}>
+            <MaterialIcons name='account-circle' size={42} color='white' />
+          </TouchableOpacity>
         </View>
         <View style={styles.container}>
           <CryptoCurrencyList />
@@ -53,25 +59,31 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    color: "#fff",
-    // fontFamily: "Roboto",
-    fontWeight: "bold",
-    fontSize: 36,
-    marginLeft: 16,
-  },
-  logo: {
-    height: 65,
-    width: 65,
-    marginLeft: 10,
-  },
-  container: {
-    flex: 1,
+  header: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginVertical: 12,
   },
   background: {
     flex: 1,
     alignItems: "cover",
     justifyContent: "center",
-    margin: -4,
+  },
+  title: {
+    color: "#fff",
+    // fontFamily: "Roboto",
+    fontWeight: "bold",
+    fontSize: 42,
+    marginLeft: 8,
+  },
+  logo: {
+    height: 65,
+    width: 65,
+  },
+  container: {
+    flex: 1,
   },
 });

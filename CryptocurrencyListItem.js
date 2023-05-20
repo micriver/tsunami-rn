@@ -8,20 +8,13 @@ import {
   View,
 } from "react-native";
 import React from "react";
-import { LinearGradient } from "expo-linear-gradient";
+// import { LinearGradient } from "expo-linear-gradient";
 
 const CryptocurrencyListItem = ({ currency, index }) => {
   const { name, symbol, current_price, price_change_24h, image } = currency;
 
   return (
     <TouchableOpacity onPress={() => console.log("Pressed!")}>
-      {/* <View style={styles.shadow}> */}
-      {/* <LinearGradient
-        colors={["#2C7D7D", "#1B3D44"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: -0.02, y: 1.2 }}
-        style={styles.background}
-      > */}
       <View style={styles.background}>
         <View style={styles.item}>
           <View style={styles.leftThird}>
@@ -57,8 +50,6 @@ const CryptocurrencyListItem = ({ currency, index }) => {
           </View>
         </View>
       </View>
-      {/* </LinearGradient> */}
-      {/* </View> */}
     </TouchableOpacity>
   );
 };
@@ -68,10 +59,9 @@ export default CryptocurrencyListItem;
 const styles = StyleSheet.create({
   background: {
     borderRadius: 15,
-    width: Dimensions.get("screen").width - 40,
     padding: 20,
     marginVertical: 8,
-    marginHorizontal: 16,
+    backgroundColor: "#F0903F",
   },
   item: {
     display: "flex",
@@ -110,7 +100,7 @@ const styles = StyleSheet.create({
   },
   leftThirdSymbol: {
     fontSize: 12,
-    color: "#ccc",
+    color: "white",
   },
   rightThird: {
     display: "flex",
@@ -129,15 +119,15 @@ const styles = StyleSheet.create({
   },
   red: {
     marginTop: 6,
-    opacity: 0.7,
+    // opacity: 0.7,
     backgroundColor: "#FF0000",
     borderRadius: 5,
     padding: 5,
   },
   green: {
     marginTop: 6,
-    opacity: 0.6,
-    backgroundColor: "#00FF00",
+    // opacity: 0.6,
+    backgroundColor: "#008000",
     borderRadius: 5,
     padding: 5,
   },

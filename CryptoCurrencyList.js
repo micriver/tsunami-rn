@@ -337,6 +337,7 @@ const CryptoCurrencyList = () => {
         renderItem={({ item, index }) => (
           <CryptocurrencyListItem currency={item} index={index} />
         )}
+        showsVerticalScrollIndicator={false}
         style={styles.list}
       />
     </SafeAreaView>
