@@ -331,7 +331,9 @@ const CryptoCurrencyList = () => {
   // }, []);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.subheader}>Markets</Text>
+      <Text style={styles.subtitle}>24h Volume $37.65 Bn</Text>
       <FlatList
         data={DATA}
         renderItem={({ item, index }) => (
@@ -340,7 +342,7 @@ const CryptoCurrencyList = () => {
         showsVerticalScrollIndicator={false}
         style={styles.list}
       />
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -355,9 +357,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  list: {
-    flex: 1,
+  subheader: {
+    color: "#fff",
+    // fontFamily: "Roboto",
+    alignSelf: "flex-start",
+    fontWeight: "bold",
+    fontSize: 32,
+    paddingLeft: 25,
   },
+  subtitle: {
+    fontSize: 16,
+    color: "#fff",
+    alignSelf: "flex-start",
+    paddingLeft: 25,
+  },
+  // list: {
+  //   flex: 1,
+  // },
   text: {
     color: "#fff",
   },
