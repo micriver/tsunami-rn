@@ -1,0 +1,325 @@
+{
+  "designSystem": {
+    "name": "Mobile Crypto Trading App",
+    "version": "1.0",
+    "platform": "mobile",
+    "orientation": "portrait"
+  },
+  "colorPalette": {
+    "background": {
+      "primary": "#000000",
+      "secondary": "#1a1a1a",
+      "tertiary": "#2a2a2a"
+    },
+    "text": {
+      "primary": "#ffffff",
+      "secondary": "#cccccc",
+      "muted": "#888888"
+    },
+    "accent": {
+      "positive": "#00ff88",
+      "negative": "#ff4444",
+      "neutral": "#4a90e2"
+    },
+    "indicators": {
+      "up": "#22c55e",
+      "down": "#ef4444",
+      "neutral": "#6b7280"
+    }
+  },
+  "typography": {
+    "fontFamily": "SF Pro Display, -apple-system, system-ui",
+    "hierarchy": {
+      "h1": {
+        "size": "32px",
+        "weight": "700",
+        "lineHeight": "1.2"
+      },
+      "h2": {
+        "size": "24px",
+        "weight": "600",
+        "lineHeight": "1.3"
+      },
+      "body": {
+        "size": "16px",
+        "weight": "400",
+        "lineHeight": "1.4"
+      },
+      "caption": {
+        "size": "14px",
+        "weight": "400",
+        "lineHeight": "1.3"
+      },
+      "small": {
+        "size": "12px",
+        "weight": "400",
+        "lineHeight": "1.2"
+      }
+    }
+  },
+  "layout": {
+    "statusBar": {
+      "height": "44px",
+      "backgroundColor": "transparent",
+      "style": "light-content"
+    },
+    "header": {
+      "height": "60px",
+      "padding": "16px",
+      "backgroundColor": "transparent",
+      "elements": {
+        "title": {
+          "position": "left",
+          "typography": "h1"
+        },
+        "subtitle": {
+          "position": "below-title",
+          "typography": "caption",
+          "color": "text.secondary"
+        },
+        "actions": {
+          "position": "right",
+          "spacing": "12px"
+        }
+      }
+    },
+    "navigation": {
+      "type": "horizontal-tabs",
+      "height": "48px",
+      "padding": "0 16px",
+      "backgroundColor": "transparent"
+    },
+    "content": {
+      "padding": "16px",
+      "backgroundColor": "background.primary"
+    },
+    "bottomNavigation": {
+      "height": "83px",
+      "padding": "8px 16px 34px",
+      "backgroundColor": "background.primary",
+      "safeArea": true
+    }
+  },
+  "components": {
+    "tabNavigation": {
+      "style": "pills",
+      "activeState": {
+        "backgroundColor": "background.secondary",
+        "textColor": "text.primary",
+        "borderRadius": "24px"
+      },
+      "inactiveState": {
+        "backgroundColor": "transparent",
+        "textColor": "text.muted"
+      },
+      "spacing": "8px"
+    },
+    "dataTable": {
+      "structure": {
+        "columns": [
+          {
+            "name": "rank",
+            "width": "40px",
+            "alignment": "center"
+          },
+          {
+            "name": "asset",
+            "width": "flex",
+            "alignment": "left"
+          },
+          {
+            "name": "price",
+            "width": "100px",
+            "alignment": "right"
+          },
+          {
+            "name": "change",
+            "width": "80px",
+            "alignment": "right"
+          }
+        ],
+        "rowHeight": "72px",
+        "rowSpacing": "0px"
+      },
+      "styling": {
+        "backgroundColor": "transparent",
+        "borderRadius": "0px",
+        "dividers": false
+      }
+    },
+    "assetRow": {
+      "layout": {
+        "height": "72px",
+        "padding": "12px 16px",
+        "alignment": "center"
+      },
+      "elements": {
+        "rank": {
+          "typography": "body",
+          "color": "text.muted",
+          "width": "24px"
+        },
+        "icon": {
+          "size": "32px",
+          "borderRadius": "50%",
+          "marginLeft": "16px"
+        },
+        "assetInfo": {
+          "layout": "vertical",
+          "marginLeft": "12px",
+          "flex": 1
+        },
+        "assetName": {
+          "typography": "body",
+          "color": "text.primary",
+          "weight": "600"
+        },
+        "marketCap": {
+          "typography": "caption",
+          "color": "text.secondary"
+        },
+        "price": {
+          "typography": "body",
+          "color": "text.primary",
+          "weight": "500",
+          "alignment": "right"
+        },
+        "changeIndicator": {
+          "layout": "pill",
+          "padding": "4px 8px",
+          "borderRadius": "6px",
+          "typography": "small",
+          "weight": "500",
+          "marginLeft": "8px"
+        }
+      }
+    },
+    "changeIndicator": {
+      "positive": {
+        "backgroundColor": "rgba(34, 197, 94, 0.15)",
+        "textColor": "#22c55e",
+        "icon": "▲"
+      },
+      "negative": {
+        "backgroundColor": "rgba(239, 68, 68, 0.15)",
+        "textColor": "#ef4444",
+        "icon": "▼"
+      }
+    },
+    "iconButton": {
+      "size": "40px",
+      "borderRadius": "12px",
+      "backgroundColor": "background.secondary",
+      "activeOpacity": 0.7
+    },
+    "bottomNavItem": {
+      "layout": "vertical",
+      "spacing": "4px",
+      "alignment": "center",
+      "iconSize": "24px",
+      "typography": "small",
+      "activeColor": "accent.neutral",
+      "inactiveColor": "text.muted"
+    }
+  },
+  "patterns": {
+    "listItem": {
+      "structure": "icon + content + trailing",
+      "height": "variable",
+      "minHeight": "60px",
+      "padding": "12px 16px",
+      "backgroundColor": "transparent",
+      "pressable": true,
+      "feedback": "opacity"
+    },
+    "numericDisplay": {
+      "alignment": "right",
+      "typography": "body",
+      "weight": "500",
+      "conditionalStyling": {
+        "positive": "text.positive",
+        "negative": "text.negative",
+        "neutral": "text.primary"
+      }
+    },
+    "headerWithSubtitle": {
+      "layout": "vertical",
+      "alignment": "left",
+      "spacing": "2px",
+      "title": {
+        "typography": "h1",
+        "color": "text.primary"
+      },
+      "subtitle": {
+        "typography": "caption",
+        "color": "text.secondary"
+      }
+    }
+  },
+  "spacing": {
+    "xs": "4px",
+    "sm": "8px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "24px",
+    "xxl": "32px"
+  },
+  "borderRadius": {
+    "sm": "6px",
+    "md": "12px",
+    "lg": "16px",
+    "xl": "24px",
+    "full": "50%"
+  },
+  "shadows": {
+    "none": "none",
+    "subtle": "0 1px 2px rgba(0, 0, 0, 0.1)",
+    "moderate": "0 4px 6px rgba(0, 0, 0, 0.1)"
+  },
+  "animations": {
+    "default": {
+      "duration": "200ms",
+      "easing": "ease-out"
+    },
+    "press": {
+      "scale": 0.95,
+      "opacity": 0.7,
+      "duration": "100ms"
+    }
+  },
+  "responsive": {
+    "safeArea": {
+      "top": true,
+      "bottom": true,
+      "left": false,
+      "right": false
+    },
+    "scrollBehavior": "smooth",
+    "pullToRefresh": true
+  },
+  "dataVisualization": {
+    "priceFormat": {
+      "decimals": 2,
+      "thousandsSeparator": ",",
+      "currencySymbol": "$",
+      "position": "before"
+    },
+    "percentageFormat": {
+      "decimals": 2,
+      "symbol": "%",
+      "position": "after",
+      "showSign": true
+    },
+    "marketCapFormat": {
+      "abbreviation": true,
+      "units": ["Bn", "Mn", "K"],
+      "decimals": 2
+    }
+  },
+  "accessibility": {
+    "minimumTouchTarget": "44px",
+    "highContrast": true,
+    "semanticLabels": true,
+    "voiceOverSupport": true
+  }
+}

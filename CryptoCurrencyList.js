@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import CryptocurrencyListItem from "./CryptocurrencyListItem";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getMarketData } from "./apis/coinGeckoAPI";
 
 const DATA = [
@@ -321,27 +321,55 @@ const DATA = [
   },
 ];
 
-const CryptoCurrencyList = () => {
-  // useEffect(() => {
-  //   async function handleGetMarketData() {
-  //     const prices = await getMarketData();
-  //     console.log(JSON.stringify(prices, null, 3));
-  //   }
-  //   handleGetMarketData();
-  // }, []);
+const CryptoCurrencyList = ({ onCoinSelect }) => {
+  const [cryptoData, setCryptoData] = useState(DATA); // Start with mock data as fallback
+  const [isLoading, setIsLoading] = useState(true);
 
+  useEffect(() => {
+    async function handleGetMarketData() {
+      try {
+        setIsLoading(true);
+        const prices = await getMarketData();
+        if (prices && prices.length > 0) {
+          setCryptoData(prices);
+          console.log("✅ Live API data loaded successfully");
+        } else {
+          console.log("⚠️ API returned empty data, using mock data");
+        }
+      } catch (error) {
+        console.log("⚠️ API failed, using mock data:", error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    handleGetMarketData();
+  }, []);
+
+  console.log("CryptoCurrencyList rendering with data:", cryptoData.length, "items");
+  
   return (
     <View style={styles.container}>
       <Text style={styles.subheader}>Markets</Text>
       <Text style={styles.subtitle}>24h Volume $37.65 Bn</Text>
-      <FlatList
-        data={DATA}
-        renderItem={({ item, index }) => (
-          <CryptocurrencyListItem currency={item} index={index} />
-        )}
-        showsVerticalScrollIndicator={false}
-        style={styles.list}
-      />
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading crypto data...</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={cryptoData}
+          renderItem={({ item, index }) => (
+            <CryptocurrencyListItem 
+              currency={item} 
+              index={index} 
+              onPress={() => onCoinSelect && onCoinSelect(item)}
+            />
+          )}
+          showsVerticalScrollIndicator={false}
+          style={styles.list}
+          keyExtractor={(item) => item.id}
+        />
+      )}
     </View>
   );
 };
@@ -351,30 +379,34 @@ export default CryptoCurrencyList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: Dimensions.get("screen").width,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
+    paddingHorizontal: 20,
   },
   subheader: {
     color: "#fff",
-    // fontFamily: "Roboto",
-    alignSelf: "flex-start",
     fontWeight: "bold",
     fontSize: 32,
-    paddingLeft: 25,
+    marginBottom: 5,
   },
   subtitle: {
     fontSize: 16,
     color: "#fff",
-    alignSelf: "flex-start",
-    paddingLeft: 25,
+    marginBottom: 15,
   },
-  // list: {
-  //   flex: 1,
-  // },
+  list: {
+    flex: 1,
+  },
   text: {
     color: "#fff",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 50,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    opacity: 0.7,
   },
 });

@@ -10,11 +10,11 @@ import {
 import React from "react";
 // import { LinearGradient } from "expo-linear-gradient";
 
-const CryptocurrencyListItem = ({ currency, index }) => {
+const CryptocurrencyListItem = ({ currency, index, onPress }) => {
   const { name, symbol, current_price, price_change_24h, image } = currency;
 
   return (
-    <TouchableOpacity onPress={() => console.log("Pressed!")}>
+    <TouchableOpacity onPress={onPress}>
       <View style={styles.background}>
         <View style={styles.item}>
           <View style={styles.leftThird}>
@@ -59,8 +59,9 @@ export default CryptocurrencyListItem;
 const styles = StyleSheet.create({
   background: {
     borderRadius: 15,
-    padding: 20,
-    marginVertical: 8,
+    padding: 15,
+    marginVertical: 6,
+    marginHorizontal: 5,
     backgroundColor: "#F0903F",
   },
   item: {
