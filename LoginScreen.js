@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
+import theme from "./theme";
 
 const { height, width } = Dimensions.get("window");
 
@@ -43,7 +44,7 @@ export default function LoginScreen({ onLogin }) {
         <View style={styles.buttonSection}>
           {/* Primary Login Button */}
           <LinearGradient
-            colors={["#2C7D7D", "#1B3D44"]}
+            colors={theme.colors.gradients.primary}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={styles.primaryButton}
@@ -114,10 +115,11 @@ const styles = StyleSheet.create({
   },
   appTitle: {
     fontSize: 52,
-    fontWeight: "900", // Extra bold
-    color: "#2C7D7D",
+    fontWeight: theme.typography.weights.black,
+    color: theme.colors.brand.primary,
     letterSpacing: 3,
     backgroundColor: "transparent",
+    fontFamily: theme.typography.fontFamily,
   },
   imageSection: {
     position: "absolute",
@@ -156,23 +158,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   primaryButtonText: {
-    color: "#FFFFFF",
-    fontSize: 18,
-    fontWeight: "bold",
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.body + 2,
+    fontWeight: theme.typography.weights.bold,
+    fontFamily: theme.typography.fontFamily,
   },
   secondaryButton: {
     borderRadius: 25,
     borderWidth: 2,
-    borderColor: "#2C7D7D",
+    borderColor: theme.colors.accent.orange,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: "center",
     marginBottom: 12,
   },
   secondaryButtonText: {
-    color: "#2C7D7D",
-    fontSize: 18,
-    fontWeight: "600",
+    color: theme.colors.accent.orange,
+    fontSize: theme.typography.sizes.body + 2,
+    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fontFamily,
   },
   tertiaryButton: {
     paddingVertical: 8,
@@ -180,8 +184,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tertiaryButtonText: {
-    color: "#1B3D44",
-    fontSize: 16,
+    color: theme.colors.brand.secondary,
+    fontSize: theme.typography.sizes.body,
     opacity: 0.8,
+    fontFamily: theme.typography.fontFamily,
   },
 });

@@ -1,52 +1,56 @@
 import {
-  Dimensions,
   Image,
-  Pressable,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
-// import { LinearGradient } from "expo-linear-gradient";
+import React, { useState, useEffect } from "react";
+import theme from "./theme";
+import MiniChart from "./components/MiniChart";
+import AnimatedPrice from "./components/AnimatedPrice";
 
 const CryptocurrencyListItem = ({ currency, index, onPress }) => {
-  const { name, symbol, current_price, price_change_24h, image } = currency;
+  const { name, symbol, current_price, price_change_24h, image, sparkline_in_7d } = currency;
+  const [previousPrice, setPreviousPrice] = useState(current_price);
+
+  useEffect(() => {
+    if (previousPrice !== current_price) {
+      setPreviousPrice(current_price);
+    }
+  }, [current_price]);
 
   return (
-    <TouchableOpacity onPress={onPress}>
-      <View style={styles.background}>
-        <View style={styles.item}>
-          <View style={styles.leftThird}>
-            <Text
-              style={{
-                marginRight: 15,
-                color: "#fff",
-                fontSize: 16,
-                fontWeight: "800",
-              }}
-            >
-              {index + 1}
-            </Text>
-            <Image source={{ uri: image }} style={styles.image} />
-            <View style={styles.leftThirdText}>
-              <Text style={styles.leftThirdName}>{name}</Text>
-              <Text style={styles.leftThirdSymbol}>{symbol.toUpperCase()}</Text>
-            </View>
+    <TouchableOpacity onPress={onPress} style={styles.container}>
+      <View style={styles.item}>
+        <View style={styles.leftSection}>
+          <Text style={styles.rankText}>
+            {index + 1}
+          </Text>
+          <Image source={{ uri: image }} style={styles.coinImage} />
+          <View style={styles.coinInfo}>
+            <Text style={styles.coinName} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
+            <Text style={styles.coinSymbol}>{symbol.toUpperCase()}</Text>
           </View>
+        </View>
 
-          {/* market chart goes here */}
-          <View style={styles.middleThird}></View>
+        <View style={styles.chartSection}>
+          <MiniChart 
+            sparklineData={sparkline_in_7d?.price || null} 
+            priceChange={price_change_24h || 0}
+          />
+        </View>
 
-          <View style={styles.rightThird}>
-            <Text style={styles.rightThirdPrice}>
-              ${current_price.toFixed(2)}
+        <View style={styles.rightSection}>
+          <AnimatedPrice
+            price={current_price}
+            previousPrice={previousPrice}
+            style={styles.priceText}
+          />
+          <View style={[styles.changeIndicator, price_change_24h < 0 ? styles.negative : styles.positive]}>
+            <Text style={[styles.changeText, { color: price_change_24h < 0 ? theme.colors.indicators.negative : theme.colors.indicators.positive }]}>
+              {price_change_24h >= 0 ? '+' : ''}{price_change_24h.toFixed(2)}%
             </Text>
-            <View style={price_change_24h < 0 ? styles.red : styles.green}>
-              <Text style={styles.rightThirdPrice24}>
-                {price_change_24h.toFixed(2)}
-              </Text>
-            </View>
           </View>
         </View>
       </View>
@@ -57,84 +61,99 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
 export default CryptocurrencyListItem;
 
 const styles = StyleSheet.create({
-  background: {
-    borderRadius: 15,
-    padding: 15,
-    marginVertical: 6,
-    marginHorizontal: 5,
-    backgroundColor: "#F0903F",
+  container: {
+    marginVertical: theme.spacing.xs,
+    marginHorizontal: theme.spacing.lg,
+    backgroundColor: theme.colors.background.secondary,
+    borderRadius: theme.borderRadius.lg,
+    ...theme.shadows.subtle,
   },
   item: {
-    display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    borderRadius: 15,
-  },
-
-  shadow: {
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 12,
-    },
-    shadowOpacity: 0.35,
-    shadowRadius: 5.84,
-    elevation: 15,
-  },
-
-  leftThird: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
     alignItems: "center",
+    padding: theme.spacing.lg,
+    minHeight: theme.components.listItem.height,
   },
-  leftThirdText: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
+  leftSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    height: '100%',
   },
-  leftThirdName: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  rankText: {
+    color: theme.colors.text.muted,
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.weights.bold,
+    fontFamily: theme.typography.fontFamily,
+    minWidth: 32,
+    textAlign: 'center',
+    marginRight: theme.spacing.md,
+    lineHeight: theme.typography.sizes.body * 1.2,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
-  leftThirdSymbol: {
-    fontSize: 12,
-    color: "white",
+  coinImage: {
+    height: 32,
+    width: 32,
+    marginRight: theme.spacing.md,
+    borderRadius: theme.borderRadius.full,
   },
-  rightThird: {
-    display: "flex",
+  coinInfo: {
     flexDirection: "column",
     justifyContent: "center",
+    alignItems: "flex-start",
+    flex: 1,
+    marginRight: theme.spacing.sm,
+  },
+  coinName: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fontFamily,
+    flexShrink: 1,
+    lineHeight: theme.typography.sizes.body * 1.2,
+  },
+  coinSymbol: {
+    fontSize: theme.typography.sizes.caption,
+    color: theme.colors.text.secondary,
+    fontFamily: theme.typography.fontFamily,
+    marginTop: 4,
+    lineHeight: theme.typography.sizes.caption * 1.2,
+  },
+  chartSection: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginHorizontal: theme.spacing.sm,
+  },
+  rightSection: {
+    flexDirection: "column",
     alignItems: "flex-end",
+    minWidth: 100,
   },
-  rightThirdPrice: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+  priceText: {
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fontFamily,
+    textAlign: 'right',
   },
-  rightThirdPrice24: {
-    fontSize: 12,
-    color: "white",
+  changeIndicator: {
+    marginTop: theme.spacing.xs,
+    borderRadius: theme.borderRadius.sm,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: theme.spacing.xs,
   },
-  red: {
-    marginTop: 6,
-    // opacity: 0.7,
-    backgroundColor: "#FF0000",
-    borderRadius: 5,
-    padding: 5,
+  positive: {
+    backgroundColor: theme.colors.indicators.positiveBg,
   },
-  green: {
-    marginTop: 6,
-    // opacity: 0.6,
-    backgroundColor: "#008000",
-    borderRadius: 5,
-    padding: 5,
+  negative: {
+    backgroundColor: theme.colors.indicators.negativeBg,
   },
-  image: {
-    height: 50,
-    width: 50,
-    marginRight: 10,
+  changeText: {
+    fontSize: theme.typography.sizes.small,
+    fontWeight: theme.typography.weights.medium,
+    fontFamily: theme.typography.fontFamily,
+    textAlign: 'center',
   },
 });

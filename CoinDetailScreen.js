@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,12 +8,23 @@ import {
   ScrollView,
   Dimensions,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
+import theme from "./theme";
+import DetailChart from "./components/DetailChart";
+import AnimatedPrice from "./components/AnimatedPrice";
 
 const { height, width } = Dimensions.get("window");
 
 export default function CoinDetailScreen({ coin, onClose }) {
+  const [previousPrice, setPreviousPrice] = useState(null);
+
+  // Move all hooks before early return
+  useEffect(() => {
+    if (coin && coin.current_price !== undefined) {
+      setPreviousPrice(coin.current_price);
+    }
+  }, [coin?.current_price]);
+
   if (!coin) return null;
 
   const {
@@ -33,16 +44,11 @@ export default function CoinDetailScreen({ coin, onClose }) {
     circulating_supply,
   } = coin;
 
-  const priceChangeColor = price_change_24h >= 0 ? "#00C851" : "#FF4444";
+  const priceChangeColor = price_change_24h >= 0 ? theme.colors.indicators.positive : theme.colors.indicators.negative;
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={["#2C7D7D", "#1B3D44"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 0, y: 1 }}
-        style={styles.background}
-      >
+      <View style={styles.background}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.coinHeader}>
@@ -53,14 +59,18 @@ export default function CoinDetailScreen({ coin, onClose }) {
             </View>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <MaterialIcons name="close" size={28} color="white" />
+            <MaterialIcons name="close" size={28} color={theme.colors.text.primary} />
           </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* Price Section */}
           <View style={styles.priceSection}>
-            <Text style={styles.currentPrice}>${current_price.toLocaleString()}</Text>
+            <AnimatedPrice
+              price={current_price}
+              previousPrice={previousPrice}
+              style={styles.currentPrice}
+            />
             <View style={styles.priceChangeContainer}>
               <Text style={[styles.priceChange, { color: priceChangeColor }]}>
                 ${price_change_24h.toFixed(2)}
@@ -71,56 +81,48 @@ export default function CoinDetailScreen({ coin, onClose }) {
             </View>
           </View>
 
+          {/* Price Chart */}
+          <DetailChart coinId={coin.id} />
+
           {/* Stats Grid */}
-          <View style={styles.statsContainer}>
-            <View style={styles.statRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Market Cap</Text>
-                <Text style={styles.statValue}>${market_cap?.toLocaleString()}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Rank</Text>
-                <Text style={styles.statValue}>#{market_cap_rank}</Text>
-              </View>
+          <View style={styles.statsGrid}>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Market Cap</Text>
+              <Text style={styles.statValue}>${market_cap?.toLocaleString()}</Text>
             </View>
-
-            <View style={styles.statRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>24h Volume</Text>
-                <Text style={styles.statValue}>${total_volume?.toLocaleString()}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>24h High</Text>
-                <Text style={styles.statValue}>${high_24h?.toFixed(2)}</Text>
-              </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Rank</Text>
+              <Text style={styles.statValue}>#{market_cap_rank}</Text>
             </View>
-
-            <View style={styles.statRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>24h Low</Text>
-                <Text style={styles.statValue}>${low_24h?.toFixed(2)}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>All Time High</Text>
-                <Text style={styles.statValue}>${ath?.toLocaleString()}</Text>
-              </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>24h Volume</Text>
+              <Text style={styles.statValue}>${total_volume?.toLocaleString()}</Text>
             </View>
-
-            <View style={styles.statRow}>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>All Time Low</Text>
-                <Text style={styles.statValue}>${atl?.toFixed(4)}</Text>
-              </View>
-              <View style={styles.statItem}>
-                <Text style={styles.statLabel}>Circulating Supply</Text>
-                <Text style={styles.statValue}>
-                  {circulating_supply?.toLocaleString()} {symbol.toUpperCase()}
-                </Text>
-              </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>24h High</Text>
+              <Text style={styles.statValue}>${high_24h?.toFixed(2)}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>24h Low</Text>
+              <Text style={styles.statValue}>${low_24h?.toFixed(2)}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>All Time High</Text>
+              <Text style={styles.statValue}>${ath?.toLocaleString()}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>All Time Low</Text>
+              <Text style={styles.statValue}>${atl?.toFixed(4)}</Text>
+            </View>
+            <View style={styles.statCard}>
+              <Text style={styles.statLabel}>Circulating Supply</Text>
+              <Text style={styles.statValue} numberOfLines={2}>
+                {circulating_supply?.toLocaleString()} {symbol.toUpperCase()}
+              </Text>
             </View>
           </View>
         </ScrollView>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
@@ -131,14 +133,15 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
+    backgroundColor: theme.colors.background.primary,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.xxxl + theme.spacing.lg,
+    paddingBottom: theme.spacing.lg,
   },
   coinHeader: {
     flexDirection: "row",
@@ -147,72 +150,79 @@ const styles = StyleSheet.create({
   coinImage: {
     width: 50,
     height: 50,
-    marginRight: 15,
+    marginRight: theme.spacing.lg,
+    borderRadius: theme.borderRadius.full,
   },
   coinName: {
-    color: "white",
-    fontSize: 24,
-    fontWeight: "bold",
+    color: theme.colors.brand.primary,
+    fontSize: theme.typography.sizes.h2,
+    fontWeight: theme.typography.weights.bold,
+    fontFamily: theme.typography.fontFamily,
   },
   coinSymbol: {
-    color: "white",
-    fontSize: 16,
-    opacity: 0.8,
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.body,
+    fontFamily: theme.typography.fontFamily,
   },
   closeButton: {
-    padding: 10,
+    padding: theme.spacing.sm,
+    backgroundColor: theme.colors.background.secondary,
+    borderRadius: theme.borderRadius.md,
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: theme.spacing.lg,
   },
   priceSection: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: theme.spacing.xxxl,
   },
   currentPrice: {
-    color: "white",
+    color: theme.colors.text.primary,
     fontSize: 36,
-    fontWeight: "bold",
-    marginBottom: 10,
+    fontWeight: theme.typography.weights.bold,
+    marginBottom: theme.spacing.sm,
+    fontFamily: theme.typography.fontFamily,
   },
   priceChangeContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   priceChange: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginRight: 10,
+    fontSize: theme.typography.sizes.body + 2,
+    fontWeight: theme.typography.weights.semibold,
+    marginRight: theme.spacing.sm,
+    fontFamily: theme.typography.fontFamily,
   },
   priceChangePercent: {
-    fontSize: 18,
-    fontWeight: "600",
+    fontSize: theme.typography.sizes.body + 2,
+    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fontFamily,
   },
-  statsContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 20,
-  },
-  statRow: {
+  statsGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "space-between",
-    marginBottom: 20,
+    paddingHorizontal: theme.spacing.xs,
   },
-  statItem: {
-    flex: 1,
-    marginHorizontal: 5,
+  statCard: {
+    backgroundColor: theme.colors.background.secondary,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.lg,
+    marginBottom: theme.spacing.md,
+    width: '48%',
+    ...theme.shadows.subtle,
   },
   statLabel: {
-    color: "white",
-    fontSize: 14,
-    opacity: 0.7,
-    marginBottom: 5,
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.caption,
+    marginBottom: theme.spacing.xs,
+    fontFamily: theme.typography.fontFamily,
   },
   statValue: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
+    color: theme.colors.text.primary,
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fontFamily,
   },
 });

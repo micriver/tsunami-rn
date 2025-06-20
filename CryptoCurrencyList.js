@@ -5,10 +5,12 @@ import {
   StyleSheet,
   Text,
   View,
+  TouchableOpacity,
 } from "react-native";
 import CryptocurrencyListItem from "./CryptocurrencyListItem";
 import React, { useEffect, useState } from "react";
 import { getMarketData } from "./apis/coinGeckoAPI";
+import theme from "./theme";
 
 const DATA = [
   {
@@ -40,6 +42,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:40.623Z",
     price_change_percentage_24h_in_currency: -0.24816854854399642,
+    sparkline_in_7d: {
+      price: [29500, 29400, 29600, 29300, 29700, 29500, 29405]
+    },
   },
   {
     id: "ethereum",
@@ -74,6 +79,9 @@ const DATA = [
     },
     last_updated: "2023-04-29T04:34:42.547Z",
     price_change_percentage_24h_in_currency: -0.49760972069102083,
+    sparkline_in_7d: {
+      price: [1920, 1910, 1905, 1895, 1900, 1915, 1902.65]
+    },
   },
   {
     id: "tether",
@@ -104,6 +112,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:30:00.290Z",
     price_change_percentage_24h_in_currency: 0.032970851050690295,
+    sparkline_in_7d: {
+      price: [0.999, 1.001, 0.998, 1.002, 1.000, 1.001, 1.001]
+    },
   },
   {
     id: "binancecoin",
@@ -134,6 +145,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:42.023Z",
     price_change_percentage_24h_in_currency: -1.0130873758367975,
+    sparkline_in_7d: {
+      price: [330, 328, 325, 322, 324, 326, 324.36]
+    },
   },
   {
     id: "usd-coin",
@@ -164,6 +178,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:42.180Z",
     price_change_percentage_24h_in_currency: 0.046921826910867895,
+    sparkline_in_7d: {
+      price: [0.998, 1.002, 0.999, 1.001, 1.000, 0.999, 1.000]
+    },
   },
   {
     id: "ripple",
@@ -194,6 +211,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:44.334Z",
     price_change_percentage_24h_in_currency: 2.246893233670914,
+    sparkline_in_7d: {
+      price: [0.470, 0.475, 0.472, 0.478, 0.480, 0.485, 0.481574]
+    },
   },
   {
     id: "cardano",
@@ -224,6 +244,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:46.815Z",
     price_change_percentage_24h_in_currency: -0.9569682679404165,
+    sparkline_in_7d: {
+      price: [0.410, 0.408, 0.412, 0.407, 0.409, 0.411, 0.405669]
+    },
   },
   {
     id: "staked-ether",
@@ -254,6 +277,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:39.862Z",
     price_change_percentage_24h_in_currency: -0.22254620541261586,
+    sparkline_in_7d: {
+      price: [1910, 1905, 1920, 1900, 1915, 1908, 1900.4]
+    },
   },
   {
     id: "dogecoin",
@@ -284,6 +310,9 @@ const DATA = [
     roi: null,
     last_updated: "2023-04-29T04:34:47.054Z",
     price_change_percentage_24h_in_currency: 1.0017097986034575,
+    sparkline_in_7d: {
+      price: [0.080, 0.079, 0.081, 0.078, 0.082, 0.080, 0.081051]
+    },
   },
   {
     id: "matic-network",
@@ -318,39 +347,78 @@ const DATA = [
     },
     last_updated: "2023-04-29T04:34:39.409Z",
     price_change_percentage_24h_in_currency: -0.12714824736953695,
+    sparkline_in_7d: {
+      price: [1.015, 1.012, 1.018, 1.010, 1.014, 1.011, 1.008]
+    },
   },
 ];
 
 const CryptoCurrencyList = ({ onCoinSelect }) => {
   const [cryptoData, setCryptoData] = useState(DATA); // Start with mock data as fallback
   const [isLoading, setIsLoading] = useState(true);
+  const [coinCount, setCoinCount] = useState(10); // Default to 10 coins
 
   useEffect(() => {
     async function handleGetMarketData() {
       try {
         setIsLoading(true);
-        const prices = await getMarketData();
+        const prices = await getMarketData(coinCount); // Fetch coins based on selected count
         if (prices && prices.length > 0) {
           setCryptoData(prices);
-          console.log("✅ Live API data loaded successfully");
+          console.log(`✅ Live API data loaded successfully - ${coinCount} coins`);
         } else {
           console.log("⚠️ API returned empty data, using mock data");
+          setCryptoData(DATA);
         }
       } catch (error) {
         console.log("⚠️ API failed, using mock data:", error.message);
+        setCryptoData(DATA);
       } finally {
         setIsLoading(false);
       }
     }
     handleGetMarketData();
-  }, []);
+  }, [coinCount]); // Now reacts to coinCount changes
 
   console.log("CryptoCurrencyList rendering with data:", cryptoData.length, "items");
   
+  const coinCountOptions = [10, 25, 50];
+
+  const handleCoinCountChange = (count) => {
+    setCoinCount(count);
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.subheader}>Markets</Text>
-      <Text style={styles.subtitle}>24h Volume $37.65 Bn</Text>
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={styles.subheader}>Markets</Text>
+            <Text style={styles.subtitle}>24h Volume $37.65 Bn</Text>
+          </View>
+          <View style={styles.coinCountContainer}>
+            {coinCountOptions.map((count) => (
+              <TouchableOpacity
+                key={count}
+                style={[
+                  styles.coinCountButton,
+                  coinCount === count && styles.selectedCoinCount,
+                ]}
+                onPress={() => handleCoinCountChange(count)}
+              >
+                <Text
+                  style={[
+                    styles.coinCountText,
+                    coinCount === count && styles.selectedCoinCountText,
+                  ]}
+                >
+                  {count}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Loading crypto data...</Text>
@@ -368,6 +436,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
           showsVerticalScrollIndicator={false}
           style={styles.list}
           keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
         />
       )}
     </View>
@@ -379,34 +448,73 @@ export default CryptoCurrencyList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
+    backgroundColor: theme.colors.background.primary,
+  },
+  header: {
+    paddingHorizontal: theme.spacing.lg,
+    paddingTop: theme.spacing.md,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  coinCountContainer: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.background.secondary,
+    borderRadius: theme.borderRadius.lg,
+    padding: theme.spacing.xs,
+  },
+  coinCountButton: {
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.borderRadius.md,
+    marginHorizontal: 2,
+  },
+  selectedCoinCount: {
+    backgroundColor: theme.colors.brand.primary,
+  },
+  coinCountText: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.caption,
+    fontWeight: theme.typography.weights.medium,
+    fontFamily: theme.typography.fontFamily,
+  },
+  selectedCoinCountText: {
+    color: theme.colors.text.primary,
+    fontWeight: theme.typography.weights.semibold,
   },
   subheader: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 32,
-    marginBottom: 5,
+    color: theme.colors.brand.primary,
+    fontWeight: theme.typography.weights.black,
+    fontSize: theme.typography.sizes.h1,
+    marginBottom: theme.spacing.xs,
+    fontFamily: theme.typography.fontFamily,
   },
   subtitle: {
-    fontSize: 16,
-    color: "#fff",
-    marginBottom: 15,
+    fontSize: theme.typography.sizes.body,
+    color: theme.colors.text.secondary,
+    marginBottom: theme.spacing.lg,
+    fontFamily: theme.typography.fontFamily,
   },
   list: {
     flex: 1,
   },
+  listContent: {
+    paddingBottom: theme.spacing.lg,
+  },
   text: {
-    color: "#fff",
+    color: theme.colors.text.primary,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: theme.spacing.xxxl,
   },
   loadingText: {
-    color: '#fff',
-    fontSize: 16,
-    opacity: 0.7,
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.body,
+    fontFamily: theme.typography.fontFamily,
   },
 });

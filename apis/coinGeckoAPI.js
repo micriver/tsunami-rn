@@ -1,16 +1,66 @@
 import axios from "axios";
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
-// api.coingecko.com/api/v3/simple/price?ids=bitcoin%2Cethereum&vs_currencies=usd&include_24hr_change=true
 
-export const getMarketData = async () => {
+// Simple cache to avoid hitting rate limits
+const cache = new Map();
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+
+// Rate limiting - track last request time
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 1000; // 1 second between requests
+
+const getCachedData = (key) => {
+  const cached = cache.get(key);
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log(`📦 Using cached data for ${key}`);
+    return cached.data;
+  }
+  return null;
+};
+
+const setCachedData = (key, data) => {
+  cache.set(key, {
+    data,
+    timestamp: Date.now()
+  });
+};
+
+const rateLimitedRequest = async (requestFn) => {
+  const now = Date.now();
+  const timeSinceLastRequest = now - lastRequestTime;
+  
+  if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+    const delay = MIN_REQUEST_INTERVAL - timeSinceLastRequest;
+    console.log(`⏳ Rate limiting: waiting ${delay}ms`);
+    await new Promise(resolve => setTimeout(resolve, delay));
+  }
+  
+  lastRequestTime = Date.now();
+  return await requestFn();
+};
+
+export const getMarketData = async (perPage = 50) => {
+  const cacheKey = `market_data_${perPage}`;
+  
+  // Check cache first
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+  
   try {
-    const response = await axios.get(
-      `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=1&sparkline=false&price_change_percentage=24h&locale=en`
+    const response = await rateLimitedRequest(() =>
+      axios.get(
+        `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=1&sparkline=true&price_change_percentage=24h&locale=en`
+      )
     );
+    
+    setCachedData(cacheKey, response.data);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching market data:', error);
+    throw error;
   }
 };
 
@@ -40,7 +90,33 @@ export const getCoinData = async (id) => {
     const response = await axios.get(`${BASE_URL}/coins/${id}`);
     return response.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching coin data:', error);
+    throw error;
+  }
+};
+
+// Get historical price data for charts
+export const getCoinHistoricalData = async (id, days = 30) => {
+  const cacheKey = `historical_${id}_${days}`;
+  
+  // Check cache first
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+  
+  try {
+    const response = await rateLimitedRequest(() =>
+      axios.get(
+        `${BASE_URL}/coins/${id}/market_chart?vs_currency=usd&days=${days}&interval=daily`
+      )
+    );
+    
+    setCachedData(cacheKey, response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching historical data:', error);
+    throw error;
   }
 };
 

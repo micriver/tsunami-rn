@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
 import { LinearGradient } from "expo-linear-gradient";
 import {
-  Dimensions,
-  Image,
   Modal,
   SafeAreaView,
   StyleSheet,
@@ -14,20 +12,36 @@ import {
 import CryptoCurrencyList from "./CryptoCurrencyList";
 import LoginScreen from "./LoginScreen";
 import CoinDetailScreen from "./CoinDetailScreen";
+import SettingsScreen from "./components/SettingsScreen";
 import { MaterialIcons } from "@expo/vector-icons";
+import theme from "./theme";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 
-const backgroundImage = require("./assets/images/tsunami-home.png");
-const logo = require("./assets/logo/Logo3.png");
-const { height, width } = Dimensions.get("window");
-const aspectRatio = height / width;
 
-export default function App() {
+function AppContent() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const handleLogin = () => {
     setIsLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setSelectedCoin(null);
+    setIsModalVisible(false);
+    setIsSettingsVisible(false);
+  };
+
+  const handleOpenSettings = () => {
+    setIsSettingsVisible(true);
+  };
+
+  const handleCloseSettings = () => {
+    setIsSettingsVisible(false);
   };
 
   const handleCoinSelect = (coin) => {
@@ -50,20 +64,14 @@ export default function App() {
     //   style={styles.background}
     //   resizeMode='cover'
     // >
-    <LinearGradient
-      colors={["#2C7D7D", "#1B3D44"]}
-      start={{ x: -0.5, y: 0 }}
-      end={{ x: -1, y: 0.5 }}
-      style={styles.background}
-    >
+    <View style={styles.background}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Image source={logo} style={styles.logo} />
             <Text style={styles.title}>TSUNAMI</Text>
           </View>
-          <TouchableOpacity onPress={() => console.log("pressing account!")}>
-            <MaterialIcons name='account-circle' size={42} color='white' />
+          <TouchableOpacity onPress={handleOpenSettings}>
+            <MaterialIcons name='account-circle' size={42} color={theme.colors.accent.orange} />
           </TouchableOpacity>
         </View>
         
@@ -82,8 +90,31 @@ export default function App() {
       >
         <CoinDetailScreen coin={selectedCoin} onClose={handleCloseModal} />
       </Modal>
-    </LinearGradient>
+
+      {/* Settings Modal */}
+      <Modal
+        visible={isSettingsVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleCloseSettings}
+      >
+        <SettingsScreen 
+          onClose={handleCloseSettings}
+          onLogout={handleLogout}
+          isDarkMode={isDarkMode}
+          onThemeToggle={toggleTheme}
+        />
+      </Modal>
+    </View>
     // </ImageBackground>
+  );
+}
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 
@@ -92,8 +123,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.lg,
   },
   headerLeft: {
     flexDirection: "row",
@@ -101,16 +132,13 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
+    backgroundColor: theme.colors.background.primary,
   },
   title: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 28,
-    marginLeft: 10,
-  },
-  logo: {
-    height: 40,
-    width: 40,
+    color: theme.colors.brand.primary,
+    fontWeight: theme.typography.weights.black,
+    fontSize: theme.typography.sizes.h1,
+    fontFamily: theme.typography.fontFamily,
   },
   container: {
     flex: 1,
