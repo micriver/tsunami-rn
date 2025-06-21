@@ -6,6 +6,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import Svg, { Defs, Pattern, Circle as SvgCircle, Rect } from 'react-native-svg';
 import theme from '../theme';
 import { useTheme } from '../context/ThemeContext';
 
@@ -97,12 +98,49 @@ const NewsTicker = () => {
     );
   }
 
+  const DiagonalDotBackground = () => {
+    const dotColor = isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+    
+    return (
+      <Svg 
+        width={screenWidth} 
+        height={40} 
+        style={StyleSheet.absoluteFillObject}
+      >
+        <Defs>
+          <Pattern
+            id="diagonalDots"
+            patternUnits="userSpaceOnUse"
+            width="20"
+            height="20"
+            patternTransform="rotate(45)"
+          >
+            <SvgCircle
+              cx="10"
+              cy="10"
+              r="1"
+              fill={dotColor}
+            />
+          </Pattern>
+        </Defs>
+        <Rect
+          width="100%"
+          height="100%"
+          fill="url(#diagonalDots)"
+        />
+      </Svg>
+    );
+  };
+
   return (
     <View style={[styles.container, { 
       backgroundColor: isDarkMode 
         ? currentTheme.background.tertiary || '#1a1a1a' 
-        : '#f0f0f0' // Light gray for light mode
+        : '#f8f9fa' // Slightly lighter for light mode
     }]}>
+      {/* Diagonal dot grid background */}
+      <DiagonalDotBackground />
+      
       <View style={styles.tickerContainer}>
         <Animated.View 
           style={[
