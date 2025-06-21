@@ -49,7 +49,9 @@ export default function CoinDetailScreen({ coin, onClose }) {
     circulating_supply,
   } = coin;
 
-  const priceChangeColor = price_change_24h >= 0 ? theme.colors.indicators.positive : theme.colors.indicators.negative;
+  const priceChangeColor = price_change_24h >= 0 
+    ? (currentTheme.indicators?.positive || theme.colors.indicators.positive)
+    : (currentTheme.indicators?.negative || theme.colors.indicators.negative);
 
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
@@ -59,11 +61,11 @@ export default function CoinDetailScreen({ coin, onClose }) {
           <View style={styles.coinHeader}>
             <Image source={{ uri: image }} style={styles.coinImage} />
             <View>
-              <Text style={[styles.coinName, { color: currentTheme.text.primary }]}>{name}</Text>
+              <Text style={[styles.coinName, { color: currentTheme.brand?.primary || theme.colors.brand.primary }]}>{name}</Text>
               <Text style={[styles.coinSymbol, { color: currentTheme.text.secondary }]}>{symbol.toUpperCase()}</Text>
             </View>
           </View>
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: currentTheme.background.secondary }]}>
             <MaterialIcons name="close" size={28} color={currentTheme.text.primary} />
           </TouchableOpacity>
         </View>
@@ -74,11 +76,13 @@ export default function CoinDetailScreen({ coin, onClose }) {
             <AnimatedPrice
               price={current_price}
               previousPrice={previousPrice}
-              style={styles.currentPrice}
+              style={[styles.currentPrice, { 
+                color: isDarkMode ? '#ffffff' : currentTheme.text.primary 
+              }]}
             />
             <View style={styles.priceChangeContainer}>
               <Text style={[styles.priceChange, { color: priceChangeColor }]}>
-                ${price_change_24h.toFixed(2)}
+                ${price_change_24h?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Text>
               <Text style={[styles.priceChangePercent, { color: priceChangeColor }]}>
                 ({price_change_percentage_24h?.toFixed(2)}%)
@@ -91,38 +95,53 @@ export default function CoinDetailScreen({ coin, onClose }) {
 
           {/* Stats Grid */}
           <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>Market Cap</Text>
-              <Text style={styles.statValue}>${market_cap?.toLocaleString()}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>Market Cap</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>
+                ${market_cap?.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>Rank</Text>
-              <Text style={styles.statValue}>#{market_cap_rank}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>Rank</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>#{market_cap_rank}</Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>24h Volume</Text>
-              <Text style={styles.statValue}>${total_volume?.toLocaleString()}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>24h Volume</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>
+                ${total_volume?.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+              </Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>24h High</Text>
-              <Text style={styles.statValue}>${high_24h?.toFixed(2)}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>24h High</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>
+                ${high_24h?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>24h Low</Text>
-              <Text style={styles.statValue}>${low_24h?.toFixed(2)}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>24h Low</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>
+                ${low_24h?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>All Time High</Text>
-              <Text style={styles.statValue}>${ath?.toLocaleString()}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>All Time High</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>
+                ${ath?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>All Time Low</Text>
-              <Text style={styles.statValue}>${atl?.toFixed(4)}</Text>
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>All Time Low</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]}>
+                ${atl?.toLocaleString(undefined, { 
+                  minimumFractionDigits: atl && atl < 1 ? 4 : 2, 
+                  maximumFractionDigits: atl && atl < 1 ? 4 : 2 
+                })}
+              </Text>
             </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statLabel}>Circulating Supply</Text>
-              <Text style={styles.statValue} numberOfLines={2}>
-                {circulating_supply?.toLocaleString()} {symbol.toUpperCase()}
+            <View style={[styles.statCard, { backgroundColor: currentTheme.background.secondary }]}>
+              <Text style={[styles.statLabel, { color: currentTheme.text.secondary }]}>Circulating Supply</Text>
+              <Text style={[styles.statValue, { color: currentTheme.text.primary }]} numberOfLines={2}>
+                {circulating_supply?.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} {symbol.toUpperCase()}
               </Text>
             </View>
           </View>
@@ -138,7 +157,6 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    backgroundColor: theme.colors.background.primary,
   },
   header: {
     flexDirection: "row",
@@ -159,19 +177,16 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.full,
   },
   coinName: {
-    color: theme.colors.brand.primary,
     fontSize: theme.typography.sizes.h2,
     fontWeight: theme.typography.weights.bold,
     fontFamily: theme.typography.fontFamily,
   },
   coinSymbol: {
-    color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.body,
     fontFamily: theme.typography.fontFamily,
   },
   closeButton: {
     padding: theme.spacing.sm,
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.md,
   },
   content: {
@@ -180,10 +195,9 @@ const styles = StyleSheet.create({
   },
   priceSection: {
     alignItems: "center",
-    marginBottom: theme.spacing.xxxl,
+    marginBottom: theme.spacing.lg, // Reduced from xxxl to lg
   },
   currentPrice: {
-    color: theme.colors.text.primary,
     fontSize: 36,
     fontWeight: theme.typography.weights.bold,
     marginBottom: theme.spacing.sm,
@@ -211,7 +225,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.xs,
   },
   statCard: {
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.lg,
     marginBottom: theme.spacing.md,
@@ -219,13 +232,11 @@ const styles = StyleSheet.create({
     ...theme.shadows.subtle,
   },
   statLabel: {
-    color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.caption,
     marginBottom: theme.spacing.xs,
     fontFamily: theme.typography.fontFamily,
   },
   statValue: {
-    color: theme.colors.text.primary,
     fontSize: theme.typography.sizes.body,
     fontWeight: theme.typography.weights.semibold,
     fontFamily: theme.typography.fontFamily,

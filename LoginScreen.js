@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   },
   titleSection: {
     alignItems: "center",
-    paddingTop: theme.spacing.xxxl * 2.5,
+    paddingTop: height * 0.15, // Use percentage of screen height for better centering
     paddingHorizontal: theme.spacing.xl,
   },
   appTitle: {
@@ -108,10 +108,10 @@ const styles = StyleSheet.create({
   },
   tickerSection: {
     flex: 1, // Take up all space between title and buttons
-    marginTop: theme.spacing.sm, // Move tickers even closer to title
-    marginBottom: theme.spacing.xxxl, // More space from buttons
-    justifyContent: "flex-start", // Align tickers to top of section
-    paddingTop: theme.spacing.xl, // Add padding to move them north
+    marginTop: height * 0.04, // Much less margin after title to move tickers up
+    marginBottom: theme.spacing.xxxl, // Back to original button spacing
+    justifyContent: "flex-start", // Align tickers to top of their section
+    paddingTop: theme.spacing.sm, // Small padding to move them up
   },
   buttonSection: {
     position: "absolute",

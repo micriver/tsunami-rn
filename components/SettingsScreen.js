@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -8,150 +8,234 @@ import {
   Switch,
   Linking,
   Alert,
-} from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
-import theme from '../theme';
+} from "react-native";
+import { MaterialIcons } from "@expo/vector-icons";
+import theme from "../theme";
 
 const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
-  const currentIndicators = isDarkMode ? theme.colors.dark.indicators : theme.colors.indicators;
-  const currentBrand = isDarkMode ? theme.colors.dark.brand : theme.colors.brand;
-  const currentAccent = isDarkMode ? theme.colors.dark.accent : theme.colors.accent;
+  const currentIndicators = isDarkMode
+    ? theme.colors.dark.indicators
+    : theme.colors.indicators;
+  const currentBrand = isDarkMode
+    ? theme.colors.dark.brand
+    : theme.colors.brand;
+  const currentAccent = isDarkMode
+    ? theme.colors.dark.accent
+    : theme.colors.accent;
 
   const handleWebsitePress = () => {
-    const websiteUrl = 'https://github.com/micriver/tsunami-rn';
-    Alert.alert(
-      'Visit Repository',
-      `This would open ${websiteUrl}`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Open', 
-          onPress: () => Linking.openURL(websiteUrl).catch(() => {
-            Alert.alert('Error', 'Could not open link');
-          })
-        },
-      ]
-    );
+    const websiteUrl = "https://github.com/micriver/tsunami-rn";
+    Alert.alert("Visit Repository", `This would open ${websiteUrl}`, [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Open",
+        onPress: () =>
+          Linking.openURL(websiteUrl).catch(() => {
+            Alert.alert("Error", "Could not open link");
+          }),
+      },
+    ]);
   };
 
-  const SettingsItem = ({ icon, title, subtitle, onPress, showArrow = true, rightComponent }) => (
-    <TouchableOpacity style={[styles.settingsItem, { backgroundColor: currentTheme.background.secondary }]} onPress={onPress}>
+  const SettingsItem = ({
+    icon,
+    title,
+    subtitle,
+    onPress,
+    showArrow = true,
+    rightComponent,
+  }) => (
+    <TouchableOpacity
+      style={[
+        styles.settingsItem,
+        { backgroundColor: currentTheme.background.secondary },
+      ]}
+      onPress={onPress}
+    >
       <View style={styles.settingsItemLeft}>
-        <MaterialIcons name={icon} size={24} color={currentTheme.text.secondary} style={styles.settingsIcon} />
+        <MaterialIcons
+          name={icon}
+          size={24}
+          color={currentTheme.text.secondary}
+          style={styles.settingsIcon}
+        />
         <View style={styles.settingsTextContainer}>
-          <Text style={[styles.settingsTitle, { color: currentTheme.text.primary }]}>{title}</Text>
+          <Text
+            style={[styles.settingsTitle, { color: currentTheme.text.primary }]}
+          >
+            {title}
+          </Text>
           {subtitle && (
-            <Text style={[styles.settingsSubtitle, { color: currentTheme.text.secondary }]}>{subtitle}</Text>
+            <Text
+              style={[
+                styles.settingsSubtitle,
+                { color: currentTheme.text.secondary },
+              ]}
+            >
+              {subtitle}
+            </Text>
           )}
         </View>
       </View>
       <View style={styles.settingsItemRight}>
         {rightComponent}
         {showArrow && !rightComponent && (
-          <MaterialIcons name="chevron-right" size={24} color={currentTheme.text.muted} />
+          <MaterialIcons
+            name='chevron-right'
+            size={24}
+            color={currentTheme.text.muted}
+          />
         )}
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: currentTheme.background.primary },
+      ]}
+    >
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: currentTheme.background.primary, borderBottomColor: currentTheme.background.tertiary }]}>
-        <Text style={[styles.headerTitle, { color: currentTheme.text.primary }]}>Settings</Text>
-        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: currentTheme.background.secondary }]}>
-          <MaterialIcons name="close" size={28} color={currentTheme.text.primary} />
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: currentTheme.background.primary,
+            borderBottomColor: currentTheme.background.tertiary,
+          },
+        ]}
+      >
+        <Text
+          style={[styles.headerTitle, { color: currentTheme.text.primary }]}
+        >
+          Settings
+        </Text>
+        <TouchableOpacity
+          onPress={onClose}
+          style={[
+            styles.closeButton,
+            { backgroundColor: currentTheme.background.secondary },
+          ]}
+        >
+          <MaterialIcons
+            name='close'
+            size={28}
+            color={currentTheme.text.primary}
+          />
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Account Info Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Account</Text>
-          
-          <SettingsItem
-            icon="person"
-            title="Username"
-            subtitle="crypto_trader_2024"
-            onPress={() => {}}
-          />
-          
-          <SettingsItem
-            icon="attach-money"
-            title="Preferred Currency"
-            subtitle="USD ($)"
-            onPress={() => {}}
-          />
-          
-          <SettingsItem
-            icon="star"
-            title="Watchlist"
-            subtitle="12 coins tracked"
-            onPress={() => {}}
-          />
-        </View>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: currentTheme.text.secondary },
+            ]}
+          >
+            Account
+          </Text>
 
+          <SettingsItem
+            icon='person'
+            title='Username'
+            subtitle='crypto_trader_2024'
+            onPress={() => {}}
+          />
 
-        {/* App Info Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>About</Text>
-          
           <SettingsItem
-            icon="language"
-            title="Repository"
-            subtitle="github.com/micriver/tsunami-rn"
-            onPress={handleWebsitePress}
-          />
-          
-          <SettingsItem
-            icon="info"
-            title="App Version"
-            subtitle="1.0.0"
-            onPress={() => {}}
-            showArrow={false}
-          />
-          
-          <SettingsItem
-            icon="help"
-            title="Help & Support"
+            icon='attach-money'
+            title='Preferred Currency'
+            subtitle='USD ($)'
             onPress={() => {}}
           />
-          
+
           <SettingsItem
-            icon="privacy-tip"
-            title="Privacy Policy"
+            icon='star'
+            title='Watchlist'
+            subtitle='12 coins tracked'
             onPress={() => {}}
           />
         </View>
 
         {/* Account Actions Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Actions</Text>
-          
-          <TouchableOpacity 
+          <Text
             style={[
-              styles.settingsItem, 
-              styles.logoutItem, 
-              { 
+              styles.sectionTitle,
+              { color: currentTheme.text.secondary },
+            ]}
+          >
+            Actions
+          </Text>
+
+          <TouchableOpacity
+            style={[
+              styles.settingsItem,
+              styles.logoutItem,
+              {
                 backgroundColor: currentTheme.background.secondary,
-                borderColor: currentIndicators.negative + '20'
-              }
-            ]} 
+                borderColor: currentIndicators.negative + "20",
+              },
+            ]}
             onPress={onLogout}
           >
             <View style={styles.settingsItemLeft}>
-              <MaterialIcons 
-                name="logout" 
-                size={24} 
-                color={currentIndicators.negative} 
-                style={styles.settingsIcon} 
+              <MaterialIcons
+                name='logout'
+                size={24}
+                color={currentIndicators.negative}
+                style={styles.settingsIcon}
               />
-              <Text style={[styles.settingsTitle, { color: currentIndicators.negative }]}>
+              <Text
+                style={[
+                  styles.settingsTitle,
+                  { color: currentIndicators.negative },
+                ]}
+              >
                 Log Out
               </Text>
             </View>
           </TouchableOpacity>
+        </View>
+
+        {/* App Info Section */}
+        <View style={styles.section}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: currentTheme.text.secondary },
+            ]}
+          >
+            About
+          </Text>
+
+          <SettingsItem
+            icon='language'
+            title='Repository'
+            subtitle='github.com/micriver/tsunami-rn'
+            onPress={handleWebsitePress}
+          />
+
+          <SettingsItem
+            icon='info'
+            title='App Version'
+            subtitle='1.0.0'
+            onPress={() => {}}
+            showArrow={false}
+          />
+
+          <SettingsItem icon='help' title='Help & Support' onPress={() => {}} />
+
+          <SettingsItem
+            icon='privacy-tip'
+            title='Privacy Policy'
+            onPress={() => {}}
+          />
         </View>
 
         {/* Bottom spacing */}
@@ -166,9 +250,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.xxxl + theme.spacing.lg,
     paddingBottom: theme.spacing.lg,
@@ -195,16 +279,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: theme.typography.sizes.caption,
     fontWeight: theme.typography.weights.semibold,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 1,
     marginBottom: theme.spacing.md,
     marginLeft: theme.spacing.sm,
     fontFamily: theme.typography.fontFamily,
   },
   settingsItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingVertical: theme.spacing.lg,
     paddingHorizontal: theme.spacing.md,
     borderRadius: theme.borderRadius.lg,
@@ -212,13 +296,13 @@ const styles = StyleSheet.create({
     ...theme.shadows.subtle,
   },
   settingsItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   settingsItemRight: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   settingsIcon: {
     marginRight: theme.spacing.md,
@@ -238,7 +322,7 @@ const styles = StyleSheet.create({
   },
   logoutItem: {
     borderWidth: 1,
-    borderColor: theme.colors.indicators.negative + '20',
+    borderColor: theme.colors.indicators.negative + "20",
   },
   bottomSpacing: {
     height: theme.spacing.xxxl,

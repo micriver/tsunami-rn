@@ -183,7 +183,7 @@ const NewsTicker = ({ isLoginScreen = false }) => {
               <View style={styles.newsItem}>
                 <Text
                   style={[
-                    styles.newsText,
+                    isLoginScreen ? styles.newsText : styles.newsTextMain,
                     {
                       color:
                         currentTheme.accent?.orange ||
@@ -191,7 +191,6 @@ const NewsTicker = ({ isLoginScreen = false }) => {
                     },
                   ]}
                   numberOfLines={1}
-                  ellipsizeMode='tail'
                 >
                   {headline}
                 </Text>
@@ -244,15 +243,23 @@ const styles = StyleSheet.create({
   newsItem: {
     paddingHorizontal: theme.spacing.lg,
     justifyContent: "center",
-    minWidth: screenWidth * 0.8,
+    flexShrink: 0, // Prevent shrinking
   },
   newsText: {
     fontSize: theme.typography.sizes.h3, // Even larger for login screen
     fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.weights.light,
+    fontWeight: theme.typography.weights.bold,
     textAlign: "center",
-    numberOfLines: 1,
     textTransform: "uppercase",
+    flexShrink: 0, // Prevent text from shrinking
+  },
+  newsTextMain: {
+    fontSize: theme.typography.sizes.small, // Smaller for main screen
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: theme.typography.weights.light, // Light weight for main screen
+    textAlign: "center",
+    textTransform: "uppercase",
+    flexShrink: 0, // Prevent text from shrinking
   },
   dotSeparator: {
     justifyContent: "center",

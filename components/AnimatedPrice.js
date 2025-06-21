@@ -87,7 +87,7 @@ const AnimatedPrice = ({
     }
   }, [price, previousPrice]);
 
-  const baseColor = style?.color || theme.colors.text.primary;
+  const baseColor = style?.color || '#ffffff'; // Ensure visibility in dark mode
   const flashColor = flashAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [

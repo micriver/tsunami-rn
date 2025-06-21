@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-nati
 import Svg, { Polyline, Circle, Line, Text as SvgText } from 'react-native-svg';
 import { getCoinHistoricalData } from '../apis/coinGeckoAPI';
 import theme from '../theme';
+import { useTheme } from '../context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
@@ -11,6 +12,10 @@ const DetailChart = ({ coinId }) => {
   const [selectedPeriod, setSelectedPeriod] = useState('30');
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { isDarkMode } = useTheme();
+  
+  // Get theme colors based on dark mode state
+  const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
 
   const timePeriods = [
     { label: '1D', value: '1' },
@@ -85,11 +90,14 @@ const DetailChart = ({ coinId }) => {
     const priceChange = lastPrice - firstPrice;
     
     const chartColor = priceChange >= 0 
-      ? theme.colors.indicators.positive 
-      : theme.colors.indicators.negative;
+      ? (currentTheme.indicators?.positive || theme.colors.indicators.positive)
+      : (currentTheme.indicators?.negative || theme.colors.indicators.negative);
+
+    const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    const labelColor = currentTheme.text?.secondary || theme.colors.text.secondary;
 
     return (
-      <View style={styles.chartContainer}>
+      <View style={[styles.chartContainer, { backgroundColor: currentTheme.background.secondary }]}>
         <Svg width={chartWidth} height={chartHeight}>
           {/* Horizontal grid lines */}
           {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => {
@@ -101,9 +109,9 @@ const DetailChart = ({ coinId }) => {
                 y1={y}
                 x2={chartWidth - padding}
                 y2={y}
-                stroke="#e0e0e0"
+                stroke={gridColor}
                 strokeWidth="0.5"
-                opacity="0.3"
+                opacity="0.5"
               />
             );
           })}
@@ -118,9 +126,9 @@ const DetailChart = ({ coinId }) => {
                 y1={padding}
                 x2={x}
                 y2={chartHeight - padding}
-                stroke="#e0e0e0"
+                stroke={gridColor}
                 strokeWidth="0.5"
-                opacity="0.3"
+                opacity="0.5"
               />
             );
           })}
@@ -145,10 +153,13 @@ const DetailChart = ({ coinId }) => {
                 x={5}
                 y={y + 3}
                 fontSize="10"
-                fill="#888"
+                fill={labelColor}
                 textAnchor="start"
               >
-                ${price.toFixed(price < 1 ? 4 : 2)}
+                ${price.toLocaleString(undefined, { 
+                  minimumFractionDigits: price < 1 ? 4 : 2, 
+                  maximumFractionDigits: price < 1 ? 4 : 2 
+                })}
               </SvgText>
             );
           })}
@@ -168,20 +179,24 @@ const DetailChart = ({ coinId }) => {
   };
 
   const renderTimePeriodButtons = () => (
-    <View style={styles.periodContainer}>
+    <View style={[styles.periodContainer, { backgroundColor: currentTheme.background.secondary }]}>
       {timePeriods.map((period) => (
         <TouchableOpacity
           key={period.value}
           style={[
             styles.periodButton,
-            selectedPeriod === period.value && styles.selectedPeriod,
+            selectedPeriod === period.value && [styles.selectedPeriod, { 
+              backgroundColor: currentTheme.brand?.primary || theme.colors.brand.primary 
+            }],
           ]}
           onPress={() => setSelectedPeriod(period.value)}
         >
           <Text
             style={[
-              styles.periodText,
-              selectedPeriod === period.value && styles.selectedPeriodText,
+              [styles.periodText, { color: currentTheme.text.secondary }],
+              selectedPeriod === period.value && [styles.selectedPeriodText, { 
+                color: '#ffffff' 
+              }],
             ]}
           >
             {period.label}
@@ -194,8 +209,8 @@ const DetailChart = ({ coinId }) => {
   if (isLoading) {
     return (
       <View style={styles.container}>
-        <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading chart...</Text>
+        <View style={[styles.loadingContainer, { backgroundColor: currentTheme.background.secondary }]}>
+          <Text style={[styles.loadingText, { color: currentTheme.text.secondary }]}>Loading chart...</Text>
         </View>
         {renderTimePeriodButtons()}
       </View>
@@ -205,8 +220,10 @@ const DetailChart = ({ coinId }) => {
   if (error) {
     return (
       <View style={styles.container}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{error}</Text>
+        <View style={[styles.errorContainer, { backgroundColor: currentTheme.background.secondary }]}>
+          <Text style={[styles.errorText, { 
+            color: currentTheme.indicators?.negative || theme.colors.indicators.negative 
+          }]}>{error}</Text>
         </View>
         {renderTimePeriodButtons()}
       </View>
@@ -226,7 +243,6 @@ const styles = StyleSheet.create({
     marginVertical: theme.spacing.lg,
   },
   chartContainer: {
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     marginBottom: theme.spacing.md,
     alignItems: 'center',
@@ -237,7 +253,6 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     marginBottom: theme.spacing.md,
   },
@@ -245,24 +260,20 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     marginBottom: theme.spacing.md,
   },
   loadingText: {
-    color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.body,
     fontFamily: theme.typography.fontFamily,
   },
   errorText: {
-    color: theme.colors.indicators.negative,
     fontSize: theme.typography.sizes.body,
     fontFamily: theme.typography.fontFamily,
   },
   periodContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     padding: theme.spacing.xs,
   },
@@ -272,16 +283,14 @@ const styles = StyleSheet.create({
     borderRadius: theme.borderRadius.md,
   },
   selectedPeriod: {
-    backgroundColor: theme.colors.brand.primary,
+    // Background color will be set dynamically
   },
   periodText: {
-    color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.caption,
     fontWeight: theme.typography.weights.medium,
     fontFamily: theme.typography.fontFamily,
   },
   selectedPeriodText: {
-    color: theme.colors.text.primary,
     fontWeight: theme.typography.weights.semibold,
   },
 });
