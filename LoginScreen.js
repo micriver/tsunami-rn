@@ -20,13 +20,20 @@ export default function LoginScreen({ onLogin }) {
 
       {/* App Title */}
       <View style={styles.titleSection}>
-        <Text style={styles.appTitle}>TSUNAMI</Text>
+        <Text 
+          style={styles.appTitle}
+          numberOfLines={1}
+          adjustsFontSizeToFit={true}
+          minimumFontScale={0.7}
+        >
+          TSUNAMI
+        </Text>
       </View>
 
       {/* News Tickers */}
       <View style={styles.tickerSection}>
-        <NewsTicker />
-        <CoinTicker direction="right" />
+        <NewsTicker isLoginScreen={true} />
+        <CoinTicker direction="right" isLoginScreen={true} />
       </View>
 
       {/* Login Buttons Section */}
@@ -62,7 +69,7 @@ export default function LoginScreen({ onLogin }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: theme.colors.background.secondary, // Middle palette color
+    backgroundColor: '#0f172a', // Dark navy to distinguish from main app
   },
   titleSection: {
     alignItems: 'center',
@@ -70,17 +77,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.xl,
   },
   appTitle: {
-    fontSize: 64, // Large fixed size to prevent wrapping
+    fontSize: 48, // Reduced to ensure single line
     fontWeight: theme.typography.weights.black,
     color: theme.colors.brand.primary,
-    letterSpacing: 4,
+    letterSpacing: 3,
     fontFamily: theme.typography.fontFamily,
     textAlign: 'center',
-    width: '100%',
+    numberOfLines: 1,
+    adjustsFontSizeToFit: true,
+    minimumFontScale: 0.8,
   },
   tickerSection: {
+    flex: 1, // Take up all space between title and buttons
     marginTop: theme.spacing.xl,
-    height: 80, // Same height as title roughly
+    marginBottom: theme.spacing.xl,
+    justifyContent: 'center',
   },
   buttonSection: {
     position: 'absolute',

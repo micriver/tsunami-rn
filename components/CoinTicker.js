@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -6,13 +6,17 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import theme from '../theme';
 import { useTheme } from '../context/ThemeContext';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const CoinTicker = ({ direction = 'left' }) => {
+const CoinTicker = ({ direction = 'left', isLoginScreen = false }) => {
   const scrollX = useRef(new Animated.Value(0)).current;
+  const [isDragging, setIsDragging] = useState(false);
+  const [currentAnimation, setCurrentAnimation] = useState(null);
+  const lastOffset = useRef(0);
   const { isDarkMode } = useTheme();
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
 
@@ -33,11 +37,22 @@ const CoinTicker = ({ direction = 'left' }) => {
   }, []);
 
   const startScrollAnimation = () => {
-    const totalWidth = coinData.length * screenWidth * 0.6;
-    const startValue = direction === 'left' ? 0 : -totalWidth;
-    const endValue = direction === 'left' ? -totalWidth : 0;
+    if (isDragging) return;
     
-    scrollX.setValue(startValue);
+    if (currentAnimation) {
+      currentAnimation.stop();
+    }
+
+    const totalWidth = coinData.length * screenWidth * 0.6;
+    
+    // Set initial position if not set
+    if (!lastOffset.current) {
+      const initialValue = direction === 'left' ? 0 : totalWidth;
+      scrollX.setValue(initialValue);
+      lastOffset.current = initialValue;
+    }
+    
+    const endValue = direction === 'left' ? -totalWidth : totalWidth;
     
     const scrollAnimation = Animated.loop(
       Animated.timing(scrollX, {
@@ -48,7 +63,30 @@ const CoinTicker = ({ direction = 'left' }) => {
       { iterations: -1 }
     );
 
+    setCurrentAnimation(scrollAnimation);
     scrollAnimation.start();
+  };
+
+  const onGestureEvent = Animated.event(
+    [{ nativeEvent: { translationX: scrollX } }],
+    { useNativeDriver: false }
+  );
+
+  const onHandlerStateChange = (event) => {
+    if (event.nativeEvent.state === State.BEGAN) {
+      setIsDragging(true);
+      if (currentAnimation) {
+        currentAnimation.stop();
+      }
+      lastOffset.current = scrollX._value;
+    } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
+      setIsDragging(false);
+      const finalOffset = lastOffset.current + event.nativeEvent.translationX;
+      scrollX.setValue(finalOffset);
+      lastOffset.current = finalOffset;
+      // Resume animation smoothly from current position
+      startScrollAnimation();
+    }
   };
 
   const formatPrice = (price) => {
@@ -56,49 +94,62 @@ const CoinTicker = ({ direction = 'left' }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.tickerContainer}>
-        <Animated.View 
-          style={[
-            styles.scrollingContent,
-            {
-              transform: [{ translateX: scrollX }]
-            }
-          ]}
-        >
-          {[...coinData, ...coinData].map((coin, index) => (
-            <React.Fragment key={index}>
-              <View style={styles.coinItem}>
-                <Text style={[styles.coinSymbol, { color: currentTheme.text.primary }]}>
-                  {coin.symbol}
-                </Text>
-                <Text style={[styles.coinPrice, { color: currentTheme.text.secondary }]}>
-                  {formatPrice(coin.price)}
-                </Text>
-                <Text style={[
-                  styles.coinChange, 
-                  { color: coin.change >= 0 ? theme.colors.indicators.positive : theme.colors.indicators.negative }
-                ]}>
-                  {coin.change >= 0 ? '+' : ''}{coin.change.toFixed(1)}%
-                </Text>
-              </View>
-              <View style={styles.dotSeparator}>
-                <Text style={[styles.dotText, { color: currentTheme.text.muted }]}>•</Text>
-              </View>
-            </React.Fragment>
-          ))}
+    <View style={[
+      styles.container,
+      isLoginScreen ? styles.loginContainer : styles.mainContainer
+    ]}>
+      <PanGestureHandler
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        <Animated.View style={styles.tickerContainer}>
+          <Animated.View 
+            style={[
+              styles.scrollingContent,
+              {
+                transform: [{ translateX: scrollX }]
+              }
+            ]}
+          >
+            {[...coinData, ...coinData].map((coin, index) => (
+              <React.Fragment key={index}>
+                <View style={styles.coinItem}>
+                  <Text style={[styles.coinSymbol, { color: currentTheme.text.primary }]}>
+                    {coin.symbol}
+                  </Text>
+                  <Text style={[styles.coinPrice, { color: currentTheme.text.secondary }]}>
+                    {formatPrice(coin.price)}
+                  </Text>
+                  <Text style={[
+                    styles.coinChange, 
+                    { color: coin.change >= 0 ? theme.colors.indicators.positive : theme.colors.indicators.negative }
+                  ]}>
+                    {coin.change >= 0 ? '+' : ''}{coin.change.toFixed(1)}%
+                  </Text>
+                </View>
+                <View style={styles.dotSeparator}>
+                  <Text style={[styles.dotText, { color: currentTheme.text.muted }]}>•</Text>
+                </View>
+              </React.Fragment>
+            ))}
+          </Animated.View>
         </Animated.View>
-      </View>
+      </PanGestureHandler>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    height: 40, // Match NewsTicker height
     justifyContent: 'center',
     overflow: 'hidden',
     backgroundColor: 'rgba(0, 0, 0, 0.05)',
+  },
+  mainContainer: {
+    height: 40, // Smaller for main screen
+  },
+  loginContainer: {
+    height: 120, // Much larger for login screen
   },
   tickerContainer: {
     flex: 1,
@@ -118,18 +169,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   coinSymbol: {
-    fontSize: theme.typography.sizes.small,
+    fontSize: theme.typography.sizes.body, // Larger text
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.weights.bold,
     textTransform: 'uppercase',
   },
   coinPrice: {
-    fontSize: theme.typography.sizes.small,
+    fontSize: theme.typography.sizes.body, // Larger text
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.weights.medium,
   },
   coinChange: {
-    fontSize: theme.typography.sizes.small,
+    fontSize: theme.typography.sizes.body, // Larger text
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.weights.semibold,
   },
