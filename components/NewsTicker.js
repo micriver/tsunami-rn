@@ -121,10 +121,11 @@ const NewsTicker = ({ isLoginScreen = false }) => {
     } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
       setIsDragging(false);
       const finalOffset = lastOffset.current + event.nativeEvent.translationX;
-      scrollX.setValue(finalOffset);
       lastOffset.current = finalOffset;
-      // Resume animation smoothly from current position
-      startScrollAnimation();
+      // Don't setValue here - let the animation continue from current position
+      setTimeout(() => {
+        startScrollAnimation();
+      }, 50);
     }
   };
 

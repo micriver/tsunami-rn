@@ -12,11 +12,16 @@ import { MaterialIcons } from "@expo/vector-icons";
 import theme from "./theme";
 import DetailChart from "./components/DetailChart";
 import AnimatedPrice from "./components/AnimatedPrice";
+import { useTheme } from "./context/ThemeContext";
 
 const { height, width } = Dimensions.get("window");
 
 export default function CoinDetailScreen({ coin, onClose }) {
   const [previousPrice, setPreviousPrice] = useState(null);
+  const { isDarkMode } = useTheme();
+  
+  // Get theme colors based on dark mode state
+  const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
 
   // Move all hooks before early return
   useEffect(() => {
@@ -47,19 +52,19 @@ export default function CoinDetailScreen({ coin, onClose }) {
   const priceChangeColor = price_change_24h >= 0 ? theme.colors.indicators.positive : theme.colors.indicators.negative;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.background}>
+    <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
+      <View style={[styles.background, { backgroundColor: currentTheme.background.primary }]}>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.coinHeader}>
             <Image source={{ uri: image }} style={styles.coinImage} />
             <View>
-              <Text style={styles.coinName}>{name}</Text>
-              <Text style={styles.coinSymbol}>{symbol.toUpperCase()}</Text>
+              <Text style={[styles.coinName, { color: currentTheme.text.primary }]}>{name}</Text>
+              <Text style={[styles.coinSymbol, { color: currentTheme.text.secondary }]}>{symbol.toUpperCase()}</Text>
             </View>
           </View>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <MaterialIcons name="close" size={28} color={theme.colors.text.primary} />
+            <MaterialIcons name="close" size={28} color={currentTheme.text.primary} />
           </TouchableOpacity>
         </View>
 
@@ -140,8 +145,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: theme.spacing.lg,
-    paddingTop: theme.spacing.xxxl + theme.spacing.lg,
-    paddingBottom: theme.spacing.lg,
+    paddingTop: theme.spacing.lg,
+    paddingBottom: theme.spacing.sm,
   },
   coinHeader: {
     flexDirection: "row",

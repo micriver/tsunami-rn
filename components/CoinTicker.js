@@ -44,20 +44,32 @@ const CoinTicker = ({ direction = 'left', isLoginScreen = false }) => {
     }
 
     const totalWidth = coinData.length * screenWidth * 0.6;
+    const currentValue = scrollX._value;
     
-    // Set initial position if not set
-    if (!lastOffset.current) {
+    // Set initial position if this is the first animation
+    if (lastOffset.current === 0 && currentValue === 0) {
       const initialValue = direction === 'left' ? 0 : totalWidth;
       scrollX.setValue(initialValue);
       lastOffset.current = initialValue;
     }
     
-    const endValue = direction === 'left' ? -totalWidth : totalWidth;
+    // Calculate the target based on direction
+    let targetValue;
+    if (direction === 'left') {
+      targetValue = -totalWidth;
+    } else {
+      targetValue = totalWidth * 2; // Go further right for continuous loop
+    }
+    
+    // Calculate remaining distance and duration
+    const remainingDistance = Math.abs(targetValue - currentValue);
+    const totalDistance = totalWidth;
+    const remainingDuration = (remainingDistance / totalDistance) * coinData.length * 6000;
     
     const scrollAnimation = Animated.loop(
       Animated.timing(scrollX, {
-        toValue: endValue,
-        duration: coinData.length * 6000, // 6 seconds per coin
+        toValue: targetValue,
+        duration: Math.max(remainingDuration, 1000), // Minimum 1 second
         useNativeDriver: true,
       }),
       { iterations: -1 }
@@ -82,10 +94,11 @@ const CoinTicker = ({ direction = 'left', isLoginScreen = false }) => {
     } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
       setIsDragging(false);
       const finalOffset = lastOffset.current + event.nativeEvent.translationX;
-      scrollX.setValue(finalOffset);
       lastOffset.current = finalOffset;
-      // Resume animation smoothly from current position
-      startScrollAnimation();
+      // Don't setValue here - let the animation continue from current position
+      setTimeout(() => {
+        startScrollAnimation();
+      }, 50);
     }
   };
 
@@ -171,18 +184,18 @@ const styles = StyleSheet.create({
   coinSymbol: {
     fontSize: theme.typography.sizes.body, // Larger text
     fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.weights.bold,
+    fontWeight: theme.typography.weights.light,
     textTransform: 'uppercase',
   },
   coinPrice: {
     fontSize: theme.typography.sizes.body, // Larger text
     fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.weights.medium,
+    fontWeight: theme.typography.weights.light,
   },
   coinChange: {
     fontSize: theme.typography.sizes.body, // Larger text
     fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.weights.semibold,
+    fontWeight: theme.typography.weights.light,
   },
   dotSeparator: {
     justifyContent: 'center',

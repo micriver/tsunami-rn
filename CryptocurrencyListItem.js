@@ -72,7 +72,7 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
           </Text>
           <Image source={{ uri: image }} style={styles.coinImage} />
           <View style={styles.coinInfo}>
-            <Text style={[styles.coinName, { color: currentTheme.text.primary }]} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
+            <Text style={[styles.coinName, { color: currentTheme.text.primary }]} numberOfLines={1} ellipsizeMode="tail" adjustsFontSizeToFit={true} minimumFontScale={0.7}>{name}</Text>
             <Text style={[styles.coinSymbol, { color: currentTheme.text.secondary }]}>{symbol.toUpperCase()}</Text>
           </View>
         </View>
