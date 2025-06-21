@@ -121,4 +121,43 @@ export const getCoinHistoricalData = async (id, days = 30) => {
   }
 };
 
-// additional API functions here
+export const getCoinDetails = async (coinId) => {
+  const cacheKey = `details_${coinId}`;
+  
+  // Check cache first
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  try {
+    return await rateLimitedRequest(async () => {
+      console.log(`🔍 Fetching details for ${coinId}...`);
+      const response = await axios.get(
+        `${BASE_URL}/coins/${coinId}`,
+        {
+          params: {
+            localization: false,
+            tickers: false,
+            market_data: false,
+            community_data: false,
+            developer_data: false,
+            sparkline: false
+          },
+          timeout: 10000
+        }
+      );
+      
+      const data = response.data;
+      setCachedData(cacheKey, data);
+      console.log(`✅ Successfully fetched details for ${coinId}`);
+      return data;
+    });
+  } catch (error) {
+    console.error(`❌ Error fetching details for ${coinId}:`, error.message);
+    if (error.response?.status === 429) {
+      throw new Error('Rate limit exceeded. Please wait a moment.');
+    }
+    throw error;
+  }
+};

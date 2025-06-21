@@ -9,7 +9,7 @@ import {
   Linking,
   Alert,
 } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import theme from "../theme";
 
 const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
@@ -266,16 +266,13 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
       {/* Social Footer */}
       <View style={[styles.socialFooter, { backgroundColor: currentTheme.background.secondary }]}>
         <View style={styles.socialContent}>
-          <Text style={[styles.footerText, { color: currentTheme.text.muted }]}>
-            Follow us for crypto updates
-          </Text>
           <View style={styles.socialButtons}>
             <TouchableOpacity 
               style={[styles.socialButton, { backgroundColor: currentTheme.background.primary }]}
               onPress={() => handleSocialPress('twitter')}
             >
-              <MaterialIcons 
-                name="close" 
+              <FontAwesome 
+                name="twitter" 
                 size={16} 
                 color={currentAccent?.orange || theme.colors.accent.orange} 
               />
@@ -286,8 +283,8 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
               style={[styles.socialButton, { backgroundColor: currentTheme.background.primary }]}
               onPress={() => handleSocialPress('instagram')}
             >
-              <MaterialIcons 
-                name="camera-alt" 
+              <FontAwesome 
+                name="instagram" 
                 size={16} 
                 color={currentAccent?.orange || theme.colors.accent.orange} 
               />
@@ -309,7 +306,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: theme.spacing.lg,
-    paddingTop: theme.spacing.xxxl + theme.spacing.lg,
+    paddingTop: theme.spacing.lg,
     paddingBottom: theme.spacing.lg,
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.background.tertiary,

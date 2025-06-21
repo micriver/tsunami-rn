@@ -360,11 +360,33 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
+  const [totalVolume, setTotalVolume] = useState(0);
   const COINS_PER_PAGE = 25;
   const { isDarkMode } = useTheme();
   
   // Get theme colors based on dark mode state
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
+
+  // Calculate total volume from current crypto data
+  const calculateTotalVolume = (data) => {
+    const total = data.reduce((sum, coin) => {
+      return sum + (coin.total_volume || 0);
+    }, 0);
+    setTotalVolume(total);
+  };
+
+  // Format volume for display
+  const formatVolume = (volume) => {
+    if (volume >= 1e12) {
+      return `$${(volume / 1e12).toFixed(2)} Tn`;
+    } else if (volume >= 1e9) {
+      return `$${(volume / 1e9).toFixed(2)} Bn`;
+    } else if (volume >= 1e6) {
+      return `$${(volume / 1e6).toFixed(2)} Mn`;
+    } else {
+      return `$${volume.toLocaleString()}`;
+    }
+  };
 
   useEffect(() => {
     async function handleGetMarketData() {
@@ -373,14 +395,17 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
         const prices = await getMarketData(COINS_PER_PAGE); // Start with 25 coins
         if (prices && prices.length > 0) {
           setCryptoData(prices);
+          calculateTotalVolume(prices);
           console.log(`✅ Live API data loaded successfully - ${COINS_PER_PAGE} coins`);
         } else {
           console.log("⚠️ API returned empty data, using mock data");
           setCryptoData(DATA);
+          calculateTotalVolume(DATA);
         }
       } catch (error) {
         console.log("⚠️ API failed, using mock data:", error.message);
         setCryptoData(DATA);
+        calculateTotalVolume(DATA);
       } finally {
         setIsLoading(false);
       }
@@ -407,9 +432,11 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
       const newCoins = await getMarketData(COINS_PER_PAGE, startIndex);
       
       if (newCoins && newCoins.length > 0) {
-        setCryptoData(prevData => [...prevData, ...newCoins]);
+        const updatedData = [...cryptoData, ...newCoins];
+        setCryptoData(updatedData);
+        calculateTotalVolume(updatedData);
         setCurrentPage(nextPage);
-        console.log(`✅ Loaded ${newCoins.length} more coins - Total: ${cryptoData.length + newCoins.length}`);
+        console.log(`✅ Loaded ${newCoins.length} more coins - Total: ${updatedData.length}`);
         
         // If we got fewer coins than requested, we've reached the end
         if (newCoins.length < COINS_PER_PAGE) {
@@ -432,7 +459,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
         <View style={styles.headerTop}>
           <View>
             <Text style={[styles.subheader, { color: currentTheme.brand?.primary || currentTheme.brand.primary }]}>Markets</Text>
-            <Text style={[styles.subtitle, { color: currentTheme.text.secondary }]}>24h Volume $37.65 Bn</Text>
+            <Text style={[styles.subtitle, { color: currentTheme.text.secondary }]}>24h Volume {formatVolume(totalVolume)}</Text>
           </View>
         </View>
         
@@ -515,8 +542,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: theme.spacing.md,
     paddingVertical: theme.spacing.sm,
     marginTop: theme.spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   leftColumnHeader: {
     flexDirection: 'row',

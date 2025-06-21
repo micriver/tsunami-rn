@@ -81,6 +81,7 @@ const CoinTicker = ({ direction = "left", isLoginScreen = false }) => {
       style={[
         styles.container,
         isLoginScreen ? styles.loginContainer : styles.mainContainer,
+        { backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)' }
       ]}
     >
       <Animated.View style={styles.tickerContainer}>
@@ -151,7 +152,6 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "center",
     overflow: "hidden",
-    backgroundColor: "rgba(255, 165, 0, 0.1)", // Orange tint for visibility
   },
   mainContainer: {
     height: 40, // Smaller for main screen
