@@ -10,18 +10,38 @@ import { StatusBar } from "expo-status-bar";
 import theme from "./theme";
 import NewsTicker from "./components/NewsTicker";
 import CoinTicker from "./components/CoinTicker";
+import { useTheme } from "./context/ThemeContext";
 
 const { height, width } = Dimensions.get("window");
 
 export default function LoginScreen({ onLogin }) {
+  const { isDarkMode } = useTheme();
+
+  // Get theme colors based on dark mode state
+  const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: isDarkMode
+            ? currentTheme.background.primary
+            : theme.colors.background.primary,
+        },
+      ]}
+    >
       <StatusBar style='auto' />
 
       {/* App Title */}
       <View style={styles.titleSection}>
-        <Text 
-          style={styles.appTitle}
+        <Text
+          style={[
+            styles.appTitle,
+            {
+              color: currentTheme.brand?.primary || currentTheme.brand.primary,
+            },
+          ]}
           numberOfLines={1}
           adjustsFontSizeToFit={true}
           minimumFontScale={0.7}
@@ -33,7 +53,7 @@ export default function LoginScreen({ onLogin }) {
       {/* News Tickers */}
       <View style={styles.tickerSection}>
         <NewsTicker isLoginScreen={true} />
-        <CoinTicker direction="right" isLoginScreen={true} />
+        <CoinTicker direction='right' isLoginScreen={true} />
       </View>
 
       {/* Login Buttons Section */}
@@ -69,47 +89,47 @@ export default function LoginScreen({ onLogin }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a', // Dark navy to distinguish from main app
   },
   titleSection: {
-    alignItems: 'center',
-    paddingTop: theme.spacing.xxxl * 2,
+    alignItems: "center",
+    paddingTop: theme.spacing.xxxl * 2.5,
     paddingHorizontal: theme.spacing.xl,
   },
   appTitle: {
-    fontSize: 48, // Reduced to ensure single line
+    fontSize: 56, // Larger title
     fontWeight: theme.typography.weights.black,
-    color: theme.colors.brand.primary,
-    letterSpacing: 3,
+    color: theme.colors.brand.primary, // Use original brand color
+    letterSpacing: 4,
     fontFamily: theme.typography.fontFamily,
-    textAlign: 'center',
+    textAlign: "center",
     numberOfLines: 1,
     adjustsFontSizeToFit: true,
-    minimumFontScale: 0.8,
+    minimumFontScale: 0.7,
   },
   tickerSection: {
     flex: 1, // Take up all space between title and buttons
-    marginTop: theme.spacing.xl,
-    marginBottom: theme.spacing.xl,
-    justifyContent: 'center',
+    marginTop: theme.spacing.sm, // Move tickers even closer to title
+    marginBottom: theme.spacing.xxxl, // More space from buttons
+    justifyContent: "flex-start", // Align tickers to top of section
+    paddingTop: theme.spacing.xl, // Add padding to move them north
   },
   buttonSection: {
-    position: 'absolute',
+    position: "absolute",
     bottom: theme.spacing.xxxl,
     left: theme.spacing.xl,
     right: theme.spacing.xl,
   },
   primaryButton: {
-    backgroundColor: theme.colors.brand.primary,
+    backgroundColor: theme.colors.accent.orange,
     borderRadius: theme.borderRadius.lg,
     paddingVertical: theme.spacing.lg,
     paddingHorizontal: theme.spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: theme.spacing.md,
     ...theme.shadows.subtle,
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: "#ffffff",
     fontSize: theme.typography.sizes.body,
     fontWeight: theme.typography.weights.semibold,
     fontFamily: theme.typography.fontFamily,
@@ -120,9 +140,9 @@ const styles = StyleSheet.create({
     borderColor: theme.colors.accent.orange,
     paddingVertical: theme.spacing.lg,
     paddingHorizontal: theme.spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: theme.spacing.md,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   secondaryButtonText: {
     color: theme.colors.accent.orange,
@@ -133,7 +153,7 @@ const styles = StyleSheet.create({
   tertiaryButton: {
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.xl,
-    alignItems: 'center',
+    alignItems: "center",
   },
   tertiaryButtonText: {
     color: theme.colors.text.secondary,

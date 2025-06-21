@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, Dimensions } from "react-native";
-import { PanGestureHandler, State } from "react-native-gesture-handler";
 import Svg, { Defs, Pattern, Line, Rect } from "react-native-svg";
 import theme from "../theme";
 import { useTheme } from "../context/ThemeContext";
@@ -11,9 +10,7 @@ const NewsTicker = ({ isLoginScreen = false }) => {
   const [news, setNews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const scrollX = useRef(new Animated.Value(0)).current;
-  const [isDragging, setIsDragging] = useState(false);
   const [currentAnimation, setCurrentAnimation] = useState(null);
-  const lastOffset = useRef(0);
   const { isDarkMode } = useTheme();
 
   // Get theme colors based on dark mode state
@@ -75,8 +72,6 @@ const NewsTicker = ({ isLoginScreen = false }) => {
   }, [news]);
 
   const startScrollAnimation = () => {
-    if (isDragging) return; // Don't start if dragging
-    
     // Stop current animation if any
     if (currentAnimation) {
       currentAnimation.stop();
@@ -84,19 +79,12 @@ const NewsTicker = ({ isLoginScreen = false }) => {
 
     // Calculate total width needed for all news items
     const totalWidth = news.length * screenWidth;
-    
-    // Get current position and calculate remaining distance
-    const currentValue = scrollX._value;
-    const remainingDistance = -totalWidth - currentValue;
-    const totalDistance = totalWidth;
-    const progress = Math.abs(currentValue) / totalDistance;
-    const remainingDuration = (1 - progress) * news.length * 8000;
 
-    // Create continuous scrolling animation from current position
+    // Create continuous scrolling animation
     const scrollAnimation = Animated.loop(
       Animated.timing(scrollX, {
         toValue: -totalWidth,
-        duration: Math.max(remainingDuration, 1000), // Minimum 1 second
+        duration: news.length * 8000, // 8 seconds per news item
         useNativeDriver: true,
       }),
       { iterations: -1 } // Infinite loop
@@ -104,29 +92,6 @@ const NewsTicker = ({ isLoginScreen = false }) => {
 
     setCurrentAnimation(scrollAnimation);
     scrollAnimation.start();
-  };
-
-  const onGestureEvent = Animated.event(
-    [{ nativeEvent: { translationX: scrollX } }],
-    { useNativeDriver: false }
-  );
-
-  const onHandlerStateChange = (event) => {
-    if (event.nativeEvent.state === State.BEGAN) {
-      setIsDragging(true);
-      if (currentAnimation) {
-        currentAnimation.stop();
-      }
-      lastOffset.current = scrollX._value;
-    } else if (event.nativeEvent.state === State.END || event.nativeEvent.state === State.CANCELLED) {
-      setIsDragging(false);
-      const finalOffset = lastOffset.current + event.nativeEvent.translationX;
-      lastOffset.current = finalOffset;
-      // Don't setValue here - let the animation continue from current position
-      setTimeout(() => {
-        startScrollAnimation();
-      }, 50);
-    }
   };
 
   if (isLoading) {
@@ -148,8 +113,8 @@ const NewsTicker = ({ isLoginScreen = false }) => {
     const lineColor = isDarkMode
       ? "rgba(255, 255, 255, 0.08)"
       : "rgba(0, 0, 0, 0.06)"; // 30% less subtle
-    
-    const height = isLoginScreen ? 120 : 40;
+
+    const height = isLoginScreen ? 150 : 40;
 
     return (
       <Svg
@@ -204,50 +169,45 @@ const NewsTicker = ({ isLoginScreen = false }) => {
       {/* Diagonal grid background */}
       <DiagonalGridBackground />
 
-      <PanGestureHandler
-        onGestureEvent={onGestureEvent}
-        onHandlerStateChange={onHandlerStateChange}
-      >
-        <Animated.View style={styles.tickerContainer}>
-          <Animated.View
-            style={[
-              styles.scrollingContent,
-              {
-                transform: [{ translateX: scrollX }],
-              },
-            ]}
-          >
-            {[...news, ...news].map((headline, index) => (
-              <React.Fragment key={index}>
-                <View style={styles.newsItem}>
-                  <Text
-                    style={[
-                      styles.newsText,
-                      {
-                        color:
-                          currentTheme.accent?.orange ||
-                          theme.colors.accent.orange,
-                      },
-                    ]}
-                    numberOfLines={1}
-                    ellipsizeMode='tail'
-                  >
-                    {headline}
-                  </Text>
-                </View>
-                {/* Add dot separator */}
-                <View style={styles.dotSeparator}>
-                  <Text
-                    style={[styles.dotText, { color: currentTheme.text.muted }]}
-                  >
-                    •
-                  </Text>
-                </View>
-              </React.Fragment>
-            ))}
-          </Animated.View>
+      <Animated.View style={styles.tickerContainer}>
+        <Animated.View
+          style={[
+            styles.scrollingContent,
+            {
+              transform: [{ translateX: scrollX }],
+            },
+          ]}
+        >
+          {[...news, ...news].map((headline, index) => (
+            <React.Fragment key={index}>
+              <View style={styles.newsItem}>
+                <Text
+                  style={[
+                    styles.newsText,
+                    {
+                      color:
+                        currentTheme.accent?.orange ||
+                        theme.colors.accent.orange,
+                    },
+                  ]}
+                  numberOfLines={1}
+                  ellipsizeMode='tail'
+                >
+                  {headline}
+                </Text>
+              </View>
+              {/* Add dot separator */}
+              <View style={styles.dotSeparator}>
+                <Text
+                  style={[styles.dotText, { color: currentTheme.text.muted }]}
+                >
+                  •
+                </Text>
+              </View>
+            </React.Fragment>
+          ))}
         </Animated.View>
-      </PanGestureHandler>
+      </Animated.View>
     </View>
   );
 };
@@ -263,8 +223,8 @@ const styles = StyleSheet.create({
     marginBottom: theme.spacing.md,
   },
   loginContainer: {
-    height: 120, // Much larger for login screen
-    marginBottom: theme.spacing.lg,
+    height: 150, // Even larger for login screen
+    marginBottom: 0, // No margin so tickers touch
   },
   loadingText: {
     fontSize: theme.typography.sizes.small,
@@ -287,9 +247,9 @@ const styles = StyleSheet.create({
     minWidth: screenWidth * 0.8,
   },
   newsText: {
-    fontSize: theme.typography.sizes.body, // Larger text
+    fontSize: theme.typography.sizes.h3, // Even larger for login screen
     fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.weights.bold,
+    fontWeight: theme.typography.weights.light,
     textAlign: "center",
     numberOfLines: 1,
     textTransform: "uppercase",
