@@ -12,9 +12,12 @@ import theme from '../theme';
 
 const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
+  const currentIndicators = isDarkMode ? theme.colors.dark.indicators : theme.colors.indicators;
+  const currentBrand = isDarkMode ? theme.colors.dark.brand : theme.colors.brand;
+  const currentAccent = isDarkMode ? theme.colors.dark.accent : theme.colors.accent;
 
   const SettingsItem = ({ icon, title, subtitle, onPress, showArrow = true, rightComponent }) => (
-    <TouchableOpacity style={styles.settingsItem} onPress={onPress}>
+    <TouchableOpacity style={[styles.settingsItem, { backgroundColor: currentTheme.background.secondary }]} onPress={onPress}>
       <View style={styles.settingsItemLeft}>
         <MaterialIcons name={icon} size={24} color={currentTheme.text.secondary} style={styles.settingsIcon} />
         <View style={styles.settingsTextContainer}>
@@ -36,9 +39,9 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: currentTheme.background.primary }]}>
+      <View style={[styles.header, { backgroundColor: currentTheme.background.primary, borderBottomColor: currentTheme.background.tertiary }]}>
         <Text style={[styles.headerTitle, { color: currentTheme.text.primary }]}>Settings</Text>
-        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+        <TouchableOpacity onPress={onClose} style={[styles.closeButton, { backgroundColor: currentTheme.background.secondary }]}>
           <MaterialIcons name="close" size={28} color={currentTheme.text.primary} />
         </TouchableOpacity>
       </View>
@@ -58,11 +61,11 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
                 value={isDarkMode}
                 onValueChange={onThemeToggle}
                 trackColor={{
-                  false: '#767577',
-                  true: theme.colors.brand.primary,
+                  false: isDarkMode ? '#4a4a4a' : '#767577',
+                  true: currentBrand.primary,
                 }}
                 thumbColor={isDarkMode ? '#ffffff' : '#f4f3f4'}
-                ios_backgroundColor="#3e3e3e"
+                ios_backgroundColor={isDarkMode ? '#3e3e3e' : '#3e3e3e'}
               />
             }
           />
@@ -98,17 +101,24 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Account</Text>
           
           <TouchableOpacity 
-            style={[styles.settingsItem, styles.logoutItem]} 
+            style={[
+              styles.settingsItem, 
+              styles.logoutItem, 
+              { 
+                backgroundColor: currentTheme.background.secondary,
+                borderColor: currentIndicators.negative + '20'
+              }
+            ]} 
             onPress={onLogout}
           >
             <View style={styles.settingsItemLeft}>
               <MaterialIcons 
                 name="logout" 
                 size={24} 
-                color={theme.colors.indicators.negative} 
+                color={currentIndicators.negative} 
                 style={styles.settingsIcon} 
               />
-              <Text style={[styles.settingsTitle, { color: theme.colors.indicators.negative }]}>
+              <Text style={[styles.settingsTitle, { color: currentIndicators.negative }]}>
                 Log Out
               </Text>
             </View>
@@ -168,7 +178,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: theme.spacing.lg,
     paddingHorizontal: theme.spacing.md,
-    backgroundColor: theme.colors.background.secondary,
     borderRadius: theme.borderRadius.lg,
     marginBottom: theme.spacing.sm,
     ...theme.shadows.subtle,

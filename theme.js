@@ -28,6 +28,26 @@ export const colors = {
       secondary: "#cccccc",
       muted: "#888888",
     },
+    // Market indicators for dark mode
+    indicators: {
+      positive: "#22c55e",
+      negative: "#ef4444",
+      neutral: "#6b7280",
+      positiveBg: "rgba(34, 197, 94, 0.15)",
+      negativeBg: "rgba(239, 68, 68, 0.15)",
+    },
+    // Brand colors remain the same in dark mode
+    brand: {
+      primary: "#2C7D7D",
+      secondary: "#1B3D44",
+      light: "#4a90e2",
+    },
+    // Orange accents remain the same
+    accent: {
+      orange: "#FF6B35",
+      orangeLight: "#FF8F65",
+      orangeDark: "#E5451A",
+    },
   },
 
   // Tsunami blue theme (your current colors)

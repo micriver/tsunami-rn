@@ -4,8 +4,9 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Animated,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import theme from "./theme";
 import MiniChart from "./components/MiniChart";
 import AnimatedPrice from "./components/AnimatedPrice";
@@ -13,12 +14,49 @@ import AnimatedPrice from "./components/AnimatedPrice";
 const CryptocurrencyListItem = ({ currency, index, onPress }) => {
   const { name, symbol, current_price, price_change_24h, image, sparkline_in_7d } = currency;
   const [previousPrice, setPreviousPrice] = useState(current_price);
+  const [previousChange, setPreviousChange] = useState(price_change_24h);
+  
+  const changeFlashAnim = useRef(new Animated.Value(0)).current;
+  const changeScaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     if (previousPrice !== current_price) {
       setPreviousPrice(current_price);
     }
   }, [current_price]);
+
+  useEffect(() => {
+    if (previousChange !== price_change_24h && typeof price_change_24h === 'number') {
+      // Animate the percentage change
+      Animated.sequence([
+        Animated.timing(changeFlashAnim, {
+          toValue: 1,
+          duration: 150,
+          useNativeDriver: false,
+        }),
+        Animated.timing(changeFlashAnim, {
+          toValue: 0,
+          duration: 500,
+          useNativeDriver: false,
+        }),
+      ]).start();
+
+      Animated.sequence([
+        Animated.timing(changeScaleAnim, {
+          toValue: 1.1,
+          duration: 100,
+          useNativeDriver: true,
+        }),
+        Animated.timing(changeScaleAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
+
+      setPreviousChange(price_change_24h);
+    }
+  }, [price_change_24h]);
 
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
@@ -47,11 +85,30 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
             previousPrice={previousPrice}
             style={styles.priceText}
           />
-          <View style={[styles.changeIndicator, price_change_24h < 0 ? styles.negative : styles.positive]}>
-            <Text style={[styles.changeText, { color: price_change_24h < 0 ? theme.colors.indicators.negative : theme.colors.indicators.positive }]}>
+          <Animated.View 
+            style={[
+              styles.changeIndicator, 
+              price_change_24h < 0 ? styles.negative : styles.positive,
+              { transform: [{ scale: changeScaleAnim }] }
+            ]}
+          >
+            <Animated.Text 
+              style={[
+                styles.changeText, 
+                { 
+                  color: changeFlashAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [
+                      price_change_24h < 0 ? theme.colors.indicators.negative : theme.colors.indicators.positive,
+                      price_change_24h < 0 ? '#ff6b6b' : '#51cf66' // Brighter colors for flash
+                    ]
+                  })
+                }
+              ]}
+            >
               {price_change_24h >= 0 ? '+' : ''}{price_change_24h.toFixed(2)}%
-            </Text>
-          </View>
+            </Animated.Text>
+          </Animated.View>
         </View>
       </View>
     </TouchableOpacity>

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { StatusBar } from "expo-status-bar";
-import { LinearGradient } from "expo-linear-gradient";
 import {
   Modal,
   SafeAreaView,
