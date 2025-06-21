@@ -99,7 +99,7 @@ const NewsTicker = () => {
   }
 
   const DiagonalDotBackground = () => {
-    const dotColor = isDarkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)';
+    const dotColor = isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
     
     return (
       <Svg 
@@ -111,14 +111,14 @@ const NewsTicker = () => {
           <Pattern
             id="diagonalDots"
             patternUnits="userSpaceOnUse"
-            width="12"
-            height="12"
+            width="8"
+            height="8"
             patternTransform="rotate(45)"
           >
             <SvgCircle
-              cx="6"
-              cy="6"
-              r="0.8"
+              cx="4"
+              cy="4"
+              r="1.5"
               fill={dotColor}
             />
           </Pattern>
