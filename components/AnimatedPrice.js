@@ -87,15 +87,16 @@ const AnimatedPrice = ({
     }
   }, [price, previousPrice]);
 
+  const baseColor = style?.color || theme.colors.text.primary;
   const flashColor = flashAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [
-      style?.color || theme.colors.text.primary,
+      baseColor,
       previousPrice && typeof price === 'number' && typeof previousPrice === 'number'
         ? price > previousPrice 
           ? theme.colors.indicators.positive 
           : theme.colors.indicators.negative
-        : style?.color || theme.colors.text.primary
+        : baseColor
     ],
   });
 

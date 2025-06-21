@@ -1,2 +1,5 @@
 .vscode/
 node_modules
+
+# Claude Code preferences (keep local only)
+CLAUDE.md
