@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import Svg, { Polyline, Circle } from 'react-native-svg';
+import Svg, { Polyline, Circle, Line, Text as SvgText } from 'react-native-svg';
 import { getCoinHistoricalData } from '../apis/coinGeckoAPI';
 import theme from '../theme';
 
@@ -91,6 +91,41 @@ const DetailChart = ({ coinId }) => {
     return (
       <View style={styles.chartContainer}>
         <Svg width={chartWidth} height={chartHeight}>
+          {/* Horizontal grid lines */}
+          {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => {
+            const y = padding + ratio * (chartHeight - 2 * padding);
+            return (
+              <Line
+                key={`hgrid-${index}`}
+                x1={padding}
+                y1={y}
+                x2={chartWidth - padding}
+                y2={y}
+                stroke="#e0e0e0"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+            );
+          })}
+          
+          {/* Vertical grid lines */}
+          {[0, 0.2, 0.4, 0.6, 0.8, 1].map((ratio, index) => {
+            const x = padding + ratio * (chartWidth - 2 * padding);
+            return (
+              <Line
+                key={`vgrid-${index}`}
+                x1={x}
+                y1={padding}
+                x2={x}
+                y2={chartHeight - padding}
+                stroke="#e0e0e0"
+                strokeWidth="0.5"
+                opacity="0.3"
+              />
+            );
+          })}
+          
+          {/* Chart line */}
           <Polyline
             points={points}
             fill="none"
@@ -99,7 +134,26 @@ const DetailChart = ({ coinId }) => {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-          {/* Add a dot at the end point */}
+          
+          {/* Y-axis price labels */}
+          {[0, 0.5, 1].map((ratio, index) => {
+            const y = padding + ratio * (chartHeight - 2 * padding);
+            const price = maxPrice - ratio * priceRange;
+            return (
+              <SvgText
+                key={`ylabel-${index}`}
+                x={5}
+                y={y + 3}
+                fontSize="10"
+                fill="#888"
+                textAnchor="start"
+              >
+                ${price.toFixed(price < 1 ? 4 : 2)}
+              </SvgText>
+            );
+          })}
+          
+          {/* End point dot */}
           {chartData.length > 0 && (
             <Circle
               cx={padding + (chartWidth - 2 * padding)}

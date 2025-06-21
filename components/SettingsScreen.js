@@ -19,16 +19,16 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   const currentAccent = isDarkMode ? theme.colors.dark.accent : theme.colors.accent;
 
   const handleWebsitePress = () => {
-    const websiteUrl = 'https://tsunami-crypto.com';
+    const websiteUrl = 'https://github.com/micriver/tsunami-rn';
     Alert.alert(
-      'Visit Website',
+      'Visit Repository',
       `This would open ${websiteUrl}`,
       [
         { text: 'Cancel', style: 'cancel' },
         { 
           text: 'Open', 
           onPress: () => Linking.openURL(websiteUrl).catch(() => {
-            Alert.alert('Error', 'Could not open website');
+            Alert.alert('Error', 'Could not open link');
           })
         },
       ]
@@ -122,8 +122,8 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           
           <SettingsItem
             icon="language"
-            title="Website"
-            subtitle="tsunami-crypto.com"
+            title="Repository"
+            subtitle="github.com/micriver/tsunami-rn"
             onPress={handleWebsitePress}
           />
           

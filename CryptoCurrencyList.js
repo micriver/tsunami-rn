@@ -443,7 +443,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
             <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted, marginLeft: 48 }]}>COIN</Text>
           </View>
           <View style={styles.centerColumnHeader}>
-            <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted }]}>CHART</Text>
+            <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted }]}>7D</Text>
           </View>
           <View style={styles.rightColumnHeader}>
             <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted }]}>PRICE</Text>
@@ -533,8 +533,8 @@ const styles = StyleSheet.create({
     minWidth: 100,
   },
   columnHeaderText: {
-    fontSize: theme.typography.sizes.caption,
-    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.caption - 2, // Made smaller
+    fontWeight: theme.typography.weights.medium, // Reduced from bold to medium
     fontFamily: theme.typography.fontFamily,
     textTransform: 'uppercase',
     letterSpacing: 0.5,

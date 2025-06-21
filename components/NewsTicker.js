@@ -98,7 +98,11 @@ const NewsTicker = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: currentTheme.background.tertiary || '#1a1a1a' }]}>
+    <View style={[styles.container, { 
+      backgroundColor: isDarkMode 
+        ? currentTheme.background.tertiary || '#1a1a1a' 
+        : '#f0f0f0' // Light gray for light mode
+    }]}>
       <View style={styles.tickerContainer}>
         <Animated.View 
           style={[
@@ -109,15 +113,21 @@ const NewsTicker = () => {
           ]}
         >
           {[...news, ...news].map((headline, index) => (
-            <View key={index} style={styles.newsItem}>
-              <Text 
-                style={[styles.newsText, { color: currentTheme.accent?.orange || theme.colors.accent.orange }]}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {headline}
-              </Text>
-            </View>
+            <React.Fragment key={index}>
+              <View style={styles.newsItem}>
+                <Text 
+                  style={[styles.newsText, { color: currentTheme.accent?.orange || theme.colors.accent.orange }]}
+                  numberOfLines={1}
+                  ellipsizeMode="tail"
+                >
+                  {headline}
+                </Text>
+              </View>
+              {/* Add dot separator */}
+              <View style={styles.dotSeparator}>
+                <Text style={[styles.dotText, { color: currentTheme.text.muted }]}>•</Text>
+              </View>
+            </React.Fragment>
           ))}
         </Animated.View>
       </View>
@@ -129,10 +139,9 @@ const styles = StyleSheet.create({
   container: {
     height: 40,
     justifyContent: 'center',
-    marginHorizontal: theme.spacing.lg,
     marginBottom: theme.spacing.sm,
-    borderRadius: theme.borderRadius.md,
     overflow: 'hidden',
+    // Removed marginHorizontal and borderRadius for edge-to-edge
   },
   loadingText: {
     fontSize: theme.typography.sizes.small,
@@ -161,6 +170,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     numberOfLines: 1,
     textTransform: 'uppercase',
+  },
+  dotSeparator: {
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.lg,
+  },
+  dotText: {
+    fontSize: theme.typography.sizes.body,
+    fontWeight: theme.typography.weights.bold,
   },
 });
 

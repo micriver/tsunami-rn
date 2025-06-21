@@ -88,7 +88,9 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
           <AnimatedPrice
             price={current_price}
             previousPrice={previousPrice}
-            style={[styles.priceText, { color: currentTheme.text.primary }]}
+            style={[styles.priceText, { 
+              color: isDarkMode ? '#ffffff' : currentTheme.text.primary // Ensure white in dark mode
+            }]}
           />
           <Animated.View 
             style={[
@@ -174,18 +176,18 @@ const styles = StyleSheet.create({
   },
   coinName: {
     color: theme.colors.text.primary,
-    fontSize: theme.typography.sizes.body,
+    fontSize: theme.typography.sizes.small, // Reduced from body to small
     fontWeight: theme.typography.weights.semibold,
     fontFamily: theme.typography.fontFamily,
     flexShrink: 1,
-    lineHeight: theme.typography.sizes.body * 1.2,
+    lineHeight: theme.typography.sizes.small * 1.2,
   },
   coinSymbol: {
-    fontSize: theme.typography.sizes.caption,
+    fontSize: theme.typography.sizes.caption - 1, // Made slightly smaller
     color: theme.colors.text.secondary,
     fontFamily: theme.typography.fontFamily,
-    marginTop: 4,
-    lineHeight: theme.typography.sizes.caption * 1.2,
+    marginTop: 2, // Reduced margin
+    lineHeight: (theme.typography.sizes.caption - 1) * 1.2,
   },
   chartSection: {
     justifyContent: "center",
@@ -199,7 +201,7 @@ const styles = StyleSheet.create({
   },
   priceText: {
     color: theme.colors.text.primary,
-    fontSize: theme.typography.sizes.body,
+    fontSize: theme.typography.sizes.small, // Reduced from body to small
     fontWeight: theme.typography.weights.semibold,
     fontFamily: theme.typography.fontFamily,
     textAlign: 'right',
