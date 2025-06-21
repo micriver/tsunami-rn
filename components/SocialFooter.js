@@ -49,7 +49,7 @@ const SocialFooter = () => {
           >
             <MaterialIcons 
               name="close" 
-              size={20} 
+              size={16} 
               color={currentTheme.accent?.orange || theme.colors.accent.orange} 
             />
             <Text style={[styles.socialButtonText, { color: currentTheme.text.primary }]}>X</Text>
@@ -61,7 +61,7 @@ const SocialFooter = () => {
           >
             <MaterialIcons 
               name="camera-alt" 
-              size={20} 
+              size={16} 
               color={currentTheme.accent?.orange || theme.colors.accent.orange} 
             />
             <Text style={[styles.socialButtonText, { color: currentTheme.text.primary }]}>IG</Text>
@@ -74,7 +74,7 @@ const SocialFooter = () => {
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
@@ -83,26 +83,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   footerText: {
-    fontSize: theme.typography.sizes.small,
+    fontSize: theme.typography.sizes.caption,
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.weights.medium,
-    marginBottom: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
   },
   socialButtons: {
     flexDirection: 'row',
-    gap: theme.spacing.md,
+    gap: theme.spacing.sm,
   },
   socialButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: theme.spacing.sm,
-    paddingHorizontal: theme.spacing.md,
-    borderRadius: theme.borderRadius.md,
+    paddingVertical: theme.spacing.xs,
+    paddingHorizontal: theme.spacing.sm,
+    borderRadius: theme.borderRadius.sm,
     gap: theme.spacing.xs,
     ...theme.shadows.subtle,
   },
   socialButtonText: {
-    fontSize: theme.typography.sizes.small,
+    fontSize: theme.typography.sizes.caption,
     fontFamily: theme.typography.fontFamily,
     fontWeight: theme.typography.weights.semibold,
   },

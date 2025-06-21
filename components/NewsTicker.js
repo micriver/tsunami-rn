@@ -6,7 +6,7 @@ import {
   Animated,
   Dimensions,
 } from 'react-native';
-import Svg, { Defs, Pattern, Circle as SvgCircle, Rect } from 'react-native-svg';
+import Svg, { Defs, Pattern, Line, Rect } from 'react-native-svg';
 import theme from '../theme';
 import { useTheme } from '../context/ThemeContext';
 
@@ -98,8 +98,8 @@ const NewsTicker = () => {
     );
   }
 
-  const DiagonalDotBackground = () => {
-    const dotColor = isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)';
+  const DiagonalGridBackground = () => {
+    const lineColor = isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'; // 30% less subtle
     
     return (
       <Svg 
@@ -109,24 +109,35 @@ const NewsTicker = () => {
       >
         <Defs>
           <Pattern
-            id="diagonalDots"
+            id="diagonalGrid"
             patternUnits="userSpaceOnUse"
-            width="8"
-            height="8"
+            width="12"
+            height="12"
             patternTransform="rotate(45)"
           >
-            <SvgCircle
-              cx="4"
-              cy="4"
-              r="1.5"
-              fill={dotColor}
+            {/* Diagonal grid lines */}
+            <Line
+              x1="0"
+              y1="6"
+              x2="12"
+              y2="6"
+              stroke={lineColor}
+              strokeWidth="0.5"
+            />
+            <Line
+              x1="6"
+              y1="0"
+              x2="6"
+              y2="12"
+              stroke={lineColor}
+              strokeWidth="0.5"
             />
           </Pattern>
         </Defs>
         <Rect
           width="100%"
           height="100%"
-          fill="url(#diagonalDots)"
+          fill="url(#diagonalGrid)"
         />
       </Svg>
     );
@@ -138,8 +149,8 @@ const NewsTicker = () => {
         ? currentTheme.background.tertiary || '#1a1a1a' 
         : '#f8f9fa' // Slightly lighter for light mode
     }]}>
-      {/* Diagonal dot grid background */}
-      <DiagonalDotBackground />
+      {/* Diagonal grid background */}
+      <DiagonalGridBackground />
       
       <View style={styles.tickerContainer}>
         <Animated.View 

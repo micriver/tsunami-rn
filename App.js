@@ -69,9 +69,18 @@ function AppContent() {
           <View style={styles.headerLeft}>
             <Text style={[styles.title, { color: currentTheme.brand?.primary || currentTheme.brand.primary }]}>TSUNAMI</Text>
           </View>
-          <TouchableOpacity onPress={handleOpenSettings}>
-            <MaterialIcons name='account-circle' size={42} color={currentTheme.accent?.orange || theme.colors.accent.orange} />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
+              <MaterialIcons 
+                name={isDarkMode ? 'light-mode' : 'dark-mode'} 
+                size={28} 
+                color={currentTheme.text?.secondary || theme.colors.text.secondary} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleOpenSettings}>
+              <MaterialIcons name='account-circle' size={42} color={currentTheme.accent?.orange || theme.colors.accent.orange} />
+            </TouchableOpacity>
+          </View>
         </View>
         
         {/* News Ticker between title and markets */}
@@ -134,6 +143,14 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: theme.spacing.md,
+  },
+  themeToggle: {
+    padding: theme.spacing.xs,
   },
   background: {
     flex: 1,

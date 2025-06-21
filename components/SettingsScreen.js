@@ -92,29 +92,6 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           />
         </View>
 
-        {/* App Preferences Section */}
-        <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Appearance</Text>
-          
-          <SettingsItem
-            icon="brightness-6"
-            title="Dark Mode"
-            subtitle={isDarkMode ? "Dark theme enabled" : "Light theme enabled"}
-            showArrow={false}
-            rightComponent={
-              <Switch
-                value={isDarkMode}
-                onValueChange={onThemeToggle}
-                trackColor={{
-                  false: isDarkMode ? '#4a4a4a' : '#767577',
-                  true: currentBrand.primary,
-                }}
-                thumbColor={isDarkMode ? '#ffffff' : '#f4f3f4'}
-                ios_backgroundColor={isDarkMode ? '#3e3e3e' : '#3e3e3e'}
-              />
-            }
-          />
-        </View>
 
         {/* App Info Section */}
         <View style={styles.section}>
