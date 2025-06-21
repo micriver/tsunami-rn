@@ -161,3 +161,33 @@ export const getCoinDetails = async (coinId) => {
     throw error;
   }
 };
+
+export const getFearGreedIndex = async () => {
+  const cacheKey = 'fear_greed_index';
+  
+  // Check cache first
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  try {
+    return await rateLimitedRequest(async () => {
+      console.log('📊 Fetching Fear & Greed Index...');
+      const response = await axios.get(
+        'https://api.alternative.me/fng/',
+        {
+          timeout: 10000
+        }
+      );
+      
+      const data = response.data;
+      setCachedData(cacheKey, data);
+      console.log('✅ Successfully fetched Fear & Greed Index');
+      return data;
+    });
+  } catch (error) {
+    console.error('❌ Error fetching Fear & Greed Index:', error.message);
+    throw error;
+  }
+};

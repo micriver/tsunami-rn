@@ -276,7 +276,6 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
                 size={16} 
                 color={currentAccent?.orange || theme.colors.accent.orange} 
               />
-              <Text style={[styles.socialButtonText, { color: currentTheme.text.primary }]}>X</Text>
             </TouchableOpacity>
             
             <TouchableOpacity 
@@ -288,7 +287,6 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
                 size={16} 
                 color={currentAccent?.orange || theme.colors.accent.orange} 
               />
-              <Text style={[styles.socialButtonText, { color: currentTheme.text.primary }]}>IG</Text>
             </TouchableOpacity>
           </View>
         </View>
