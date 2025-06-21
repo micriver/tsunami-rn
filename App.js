@@ -14,7 +14,6 @@ import LoginScreen from "./LoginScreen";
 import CoinDetailScreen from "./CoinDetailScreen";
 import SettingsScreen from "./components/SettingsScreen";
 import NewsTicker from "./components/NewsTicker";
-import SocialFooter from "./components/SocialFooter";
 import { MaterialIcons } from "@expo/vector-icons";
 import theme from "./theme";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
@@ -92,8 +91,6 @@ function AppContent() {
           <StatusBar style='auto' />
         </View>
         
-        {/* Social Media Footer */}
-        <SocialFooter />
       </SafeAreaView>
 
       {/* Coin Detail Modal */}

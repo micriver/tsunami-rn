@@ -1,23 +1,30 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Easing } from 'react-native';
-import theme from '../theme';
+import React, { useEffect, useRef } from "react";
+import { Animated, Easing } from "react-native";
+import theme from "../theme";
+import { useTheme } from "../context/ThemeContext";
 
-const AnimatedPrice = ({ 
-  price, 
-  previousPrice, 
-  style, 
+const AnimatedPrice = ({
+  price,
+  previousPrice,
+  style,
   formatPrice = true,
-  ...textProps 
+  ...textProps
 }) => {
+  const { isDarkMode } = useTheme();
   const flashAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(1)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (previousPrice && price !== previousPrice && typeof price === 'number' && typeof previousPrice === 'number') {
+    if (
+      previousPrice &&
+      price !== previousPrice &&
+      typeof price === "number" &&
+      typeof previousPrice === "number"
+    ) {
       const isIncrease = price > previousPrice;
-      
+
       // Enhanced flash animation with glow effect
       Animated.sequence([
         Animated.timing(flashAnim, {
@@ -67,8 +74,11 @@ const AnimatedPrice = ({
       ]).start();
 
       // Glow effect for significant changes
-      const priceChangePercent = Math.abs((price - previousPrice) / previousPrice);
-      if (priceChangePercent > 0.01) { // Only glow for changes > 1%
+      const priceChangePercent = Math.abs(
+        (price - previousPrice) / previousPrice
+      );
+      if (priceChangePercent > 0.01) {
+        // Only glow for changes > 1%
         Animated.sequence([
           Animated.timing(glowAnim, {
             toValue: 1,
@@ -87,40 +97,47 @@ const AnimatedPrice = ({
     }
   }, [price, previousPrice]);
 
-  const baseColor = style?.color || '#ffffff'; // Ensure visibility in dark mode
+  const baseColor = style?.color || (isDarkMode ? "#ffffff" : "#000000"); // Use the provided color or theme-based default
   const flashColor = flashAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [
       baseColor,
-      previousPrice && typeof price === 'number' && typeof previousPrice === 'number'
-        ? price > previousPrice 
-          ? theme.colors.indicators.positive 
+      previousPrice &&
+      typeof price === "number" &&
+      typeof previousPrice === "number"
+        ? price > previousPrice
+          ? theme.colors.indicators.positive
           : theme.colors.indicators.negative
-        : baseColor
+        : baseColor,
     ],
   });
 
   const glowColor = glowAnim.interpolate({
     inputRange: [0, 1],
     outputRange: [
-      'rgba(0, 0, 0, 0)',
-      previousPrice && typeof price === 'number' && typeof previousPrice === 'number'
-        ? price > previousPrice 
-          ? 'rgba(34, 197, 94, 0.3)' // Green glow
-          : 'rgba(239, 68, 68, 0.3)'  // Red glow
-        : 'rgba(0, 0, 0, 0)'
+      "rgba(0, 0, 0, 0)",
+      previousPrice &&
+      typeof price === "number" &&
+      typeof previousPrice === "number"
+        ? price > previousPrice
+          ? "rgba(34, 197, 94, 0.3)" // Green glow
+          : "rgba(239, 68, 68, 0.3)" // Red glow
+        : "rgba(0, 0, 0, 0)",
     ],
   });
 
-  const displayValue = formatPrice 
-    ? typeof price === 'number' 
-      ? `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  const displayValue = formatPrice
+    ? typeof price === "number"
+      ? `$${price.toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`
       : price
     : price;
 
   return (
-    <Animated.View 
-      style={{ 
+    <Animated.View
+      style={{
         transform: [{ scale: scaleAnim }],
         opacity: opacityAnim,
         shadowColor: glowColor,
@@ -133,12 +150,12 @@ const AnimatedPrice = ({
       <Animated.Text
         style={[
           style,
-          { 
+          {
             color: flashColor,
             textShadowColor: glowColor,
             textShadowOffset: { width: 0, height: 0 },
             textShadowRadius: 4,
-          }
+          },
         ]}
         {...textProps}
       >

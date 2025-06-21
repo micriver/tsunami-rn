@@ -89,7 +89,7 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
             price={current_price}
             previousPrice={previousPrice}
             style={[styles.priceText, { 
-              color: isDarkMode ? '#ffffff' : currentTheme.text.primary // Ensure white in dark mode
+              color: isDarkMode ? '#ffffff' : '#000000' // White in dark mode, black in light mode
             }]}
           />
           <Animated.View 

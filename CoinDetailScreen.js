@@ -77,7 +77,7 @@ export default function CoinDetailScreen({ coin, onClose }) {
               price={current_price}
               previousPrice={previousPrice}
               style={[styles.currentPrice, { 
-                color: isDarkMode ? '#ffffff' : currentTheme.text.primary 
+                color: isDarkMode ? '#ffffff' : '#000000' 
               }]}
             />
             <View style={styles.priceChangeContainer}>
