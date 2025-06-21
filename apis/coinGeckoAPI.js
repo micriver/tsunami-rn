@@ -40,8 +40,9 @@ const rateLimitedRequest = async (requestFn) => {
   return await requestFn();
 };
 
-export const getMarketData = async (perPage = 50) => {
-  const cacheKey = `market_data_${perPage}`;
+export const getMarketData = async (perPage = 50, startIndex = 1) => {
+  const page = Math.ceil(startIndex / perPage);
+  const cacheKey = `market_data_${perPage}_page_${page}`;
   
   // Check cache first
   const cachedData = getCachedData(cacheKey);
@@ -52,7 +53,7 @@ export const getMarketData = async (perPage = 50) => {
   try {
     const response = await rateLimitedRequest(() =>
       axios.get(
-        `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=1&sparkline=true&price_change_percentage=24h&locale=en`
+        `${BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=${page}&sparkline=true&price_change_percentage=24h&locale=en`
       )
     );
     

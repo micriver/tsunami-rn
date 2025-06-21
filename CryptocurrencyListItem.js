@@ -10,11 +10,16 @@ import React, { useState, useEffect, useRef } from "react";
 import theme from "./theme";
 import MiniChart from "./components/MiniChart";
 import AnimatedPrice from "./components/AnimatedPrice";
+import { useTheme } from "./context/ThemeContext";
 
 const CryptocurrencyListItem = ({ currency, index, onPress }) => {
   const { name, symbol, current_price, price_change_24h, image, sparkline_in_7d } = currency;
   const [previousPrice, setPreviousPrice] = useState(current_price);
   const [previousChange, setPreviousChange] = useState(price_change_24h);
+  const { isDarkMode } = useTheme();
+  
+  // Get theme colors based on dark mode state
+  const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
   
   const changeFlashAnim = useRef(new Animated.Value(0)).current;
   const changeScaleAnim = useRef(new Animated.Value(1)).current;
@@ -59,16 +64,16 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
   }, [price_change_24h]);
 
   return (
-    <TouchableOpacity onPress={onPress} style={styles.container}>
+    <TouchableOpacity onPress={onPress} style={[styles.container, { backgroundColor: currentTheme.background.secondary }]}>
       <View style={styles.item}>
         <View style={styles.leftSection}>
-          <Text style={styles.rankText}>
+          <Text style={[styles.rankText, { color: currentTheme.text.muted }]}>
             {index + 1}
           </Text>
           <Image source={{ uri: image }} style={styles.coinImage} />
           <View style={styles.coinInfo}>
-            <Text style={styles.coinName} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
-            <Text style={styles.coinSymbol}>{symbol.toUpperCase()}</Text>
+            <Text style={[styles.coinName, { color: currentTheme.text.primary }]} numberOfLines={1} ellipsizeMode="tail">{name}</Text>
+            <Text style={[styles.coinSymbol, { color: currentTheme.text.secondary }]}>{symbol.toUpperCase()}</Text>
           </View>
         </View>
 
@@ -83,12 +88,14 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
           <AnimatedPrice
             price={current_price}
             previousPrice={previousPrice}
-            style={styles.priceText}
+            style={[styles.priceText, { color: currentTheme.text.primary }]}
           />
           <Animated.View 
             style={[
               styles.changeIndicator, 
-              price_change_24h < 0 ? styles.negative : styles.positive,
+              price_change_24h < 0 ? 
+                { backgroundColor: currentTheme.indicators?.negativeBg || theme.colors.indicators.negativeBg } : 
+                { backgroundColor: currentTheme.indicators?.positiveBg || theme.colors.indicators.positiveBg },
               { transform: [{ scale: changeScaleAnim }] }
             ]}
           >
@@ -99,7 +106,9 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
                   color: changeFlashAnim.interpolate({
                     inputRange: [0, 1],
                     outputRange: [
-                      price_change_24h < 0 ? theme.colors.indicators.negative : theme.colors.indicators.positive,
+                      price_change_24h < 0 ? 
+                        (currentTheme.indicators?.negative || theme.colors.indicators.negative) : 
+                        (currentTheme.indicators?.positive || theme.colors.indicators.positive),
                       price_change_24h < 0 ? '#ff6b6b' : '#51cf66' // Brighter colors for flash
                     ]
                   })

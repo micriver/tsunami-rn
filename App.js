@@ -12,6 +12,8 @@ import CryptoCurrencyList from "./CryptoCurrencyList";
 import LoginScreen from "./LoginScreen";
 import CoinDetailScreen from "./CoinDetailScreen";
 import SettingsScreen from "./components/SettingsScreen";
+import NewsTicker from "./components/NewsTicker";
+import SocialFooter from "./components/SocialFooter";
 import { MaterialIcons } from "@expo/vector-icons";
 import theme from "./theme";
 import { ThemeProvider, useTheme } from "./context/ThemeContext";
@@ -23,6 +25,9 @@ function AppContent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
+  
+  // Get theme colors based on dark mode state
+  const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
 
   const handleLogin = () => {
     setIsLoggedIn(true);
@@ -58,26 +63,27 @@ function AppContent() {
   }
 
   return (
-    // <ImageBackground
-    //   source={backgroundImage}
-    //   style={styles.background}
-    //   resizeMode='cover'
-    // >
-    <View style={styles.background}>
+    <View style={[styles.background, { backgroundColor: currentTheme.background.primary }]}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
-            <Text style={styles.title}>TSUNAMI</Text>
+            <Text style={[styles.title, { color: currentTheme.brand?.primary || currentTheme.brand.primary }]}>TSUNAMI</Text>
           </View>
           <TouchableOpacity onPress={handleOpenSettings}>
-            <MaterialIcons name='account-circle' size={42} color={theme.colors.accent.orange} />
+            <MaterialIcons name='account-circle' size={42} color={currentTheme.accent?.orange || theme.colors.accent.orange} />
           </TouchableOpacity>
         </View>
+        
+        {/* News Ticker between title and markets */}
+        <NewsTicker />
         
         <View style={styles.container}>
           <CryptoCurrencyList onCoinSelect={handleCoinSelect} />
           <StatusBar style='auto' />
         </View>
+        
+        {/* Social Media Footer */}
+        <SocialFooter />
       </SafeAreaView>
 
       {/* Coin Detail Modal */}

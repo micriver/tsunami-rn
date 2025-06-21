@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Switch,
+  Linking,
+  Alert,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import theme from '../theme';
@@ -15,6 +17,23 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   const currentIndicators = isDarkMode ? theme.colors.dark.indicators : theme.colors.indicators;
   const currentBrand = isDarkMode ? theme.colors.dark.brand : theme.colors.brand;
   const currentAccent = isDarkMode ? theme.colors.dark.accent : theme.colors.accent;
+
+  const handleWebsitePress = () => {
+    const websiteUrl = 'https://tsunami-crypto.com';
+    Alert.alert(
+      'Visit Website',
+      `This would open ${websiteUrl}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Open', 
+          onPress: () => Linking.openURL(websiteUrl).catch(() => {
+            Alert.alert('Error', 'Could not open website');
+          })
+        },
+      ]
+    );
+  };
 
   const SettingsItem = ({ icon, title, subtitle, onPress, showArrow = true, rightComponent }) => (
     <TouchableOpacity style={[styles.settingsItem, { backgroundColor: currentTheme.background.secondary }]} onPress={onPress}>
@@ -47,6 +66,32 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Account Info Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Account</Text>
+          
+          <SettingsItem
+            icon="person"
+            title="Username"
+            subtitle="crypto_trader_2024"
+            onPress={() => {}}
+          />
+          
+          <SettingsItem
+            icon="attach-money"
+            title="Preferred Currency"
+            subtitle="USD ($)"
+            onPress={() => {}}
+          />
+          
+          <SettingsItem
+            icon="star"
+            title="Watchlist"
+            subtitle="12 coins tracked"
+            onPress={() => {}}
+          />
+        </View>
+
         {/* App Preferences Section */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Appearance</Text>
@@ -76,6 +121,13 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>About</Text>
           
           <SettingsItem
+            icon="language"
+            title="Website"
+            subtitle="tsunami-crypto.com"
+            onPress={handleWebsitePress}
+          />
+          
+          <SettingsItem
             icon="info"
             title="App Version"
             subtitle="1.0.0"
@@ -98,7 +150,7 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
 
         {/* Account Actions Section */}
         <View style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Account</Text>
+          <Text style={[styles.sectionTitle, { color: currentTheme.text.secondary }]}>Actions</Text>
           
           <TouchableOpacity 
             style={[

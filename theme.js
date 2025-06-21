@@ -16,37 +16,37 @@ export const colors = {
     muted: "#adb5bd",       // Light gray for less important info
   },
 
-  // Dark theme colors (for modal screens like CoinDetail)
+  // Dark theme colors - predominantly black with green hero title and orange accents
   dark: {
     background: {
-      primary: "#000000",
-      secondary: "#1a1a1a",
-      tertiary: "#2a2a2a",
+      primary: "#000000",        // Pure black main background
+      secondary: "#111111",      // Very dark gray for cards/containers
+      tertiary: "#1a1a1a",       // Slightly lighter for elevated elements
     },
     text: {
-      primary: "#ffffff",
-      secondary: "#cccccc",
-      muted: "#888888",
+      primary: "#ffffff",        // White text
+      secondary: "#b3b3b3",      // Light gray text
+      muted: "#666666",          // Darker gray for less important info
     },
     // Market indicators for dark mode
     indicators: {
-      positive: "#22c55e",
-      negative: "#ef4444",
-      neutral: "#6b7280",
+      positive: "#22c55e",       // Green for gains
+      negative: "#ef4444",       // Red for losses
+      neutral: "#6b7280",        // Gray for neutral
       positiveBg: "rgba(34, 197, 94, 0.15)",
       negativeBg: "rgba(239, 68, 68, 0.15)",
     },
-    // Brand colors remain the same in dark mode
+    // Brand colors - green for hero title in dark mode
     brand: {
-      primary: "#2C7D7D",
-      secondary: "#1B3D44",
-      light: "#4a90e2",
+      primary: "#00ff88",        // Bright green for TSUNAMI title
+      secondary: "#00cc66",      // Darker green variant
+      light: "#33ff99",          // Lighter green accent
     },
-    // Orange accents remain the same
+    // Orange accents for interactions and highlights
     accent: {
-      orange: "#FF6B35",
-      orangeLight: "#FF8F65",
-      orangeDark: "#E5451A",
+      orange: "#FF6B35",         // Primary orange accent
+      orangeLight: "#FF8F65",    // Lighter orange for hover/active states
+      orangeDark: "#E5451A",     // Darker orange for pressed states
     },
   },
 

@@ -11,6 +11,7 @@ import CryptocurrencyListItem from "./CryptocurrencyListItem";
 import React, { useEffect, useState } from "react";
 import { getMarketData } from "./apis/coinGeckoAPI";
 import theme from "./theme";
+import { useTheme } from "./context/ThemeContext";
 
 const DATA = [
   {
@@ -356,16 +357,23 @@ const DATA = [
 const CryptoCurrencyList = ({ onCoinSelect }) => {
   const [cryptoData, setCryptoData] = useState(DATA); // Start with mock data as fallback
   const [isLoading, setIsLoading] = useState(true);
-  const [coinCount, setCoinCount] = useState(10); // Default to 10 coins
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMoreData, setHasMoreData] = useState(true);
+  const COINS_PER_PAGE = 25;
+  const { isDarkMode } = useTheme();
+  
+  // Get theme colors based on dark mode state
+  const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
 
   useEffect(() => {
     async function handleGetMarketData() {
       try {
         setIsLoading(true);
-        const prices = await getMarketData(coinCount); // Fetch coins based on selected count
+        const prices = await getMarketData(COINS_PER_PAGE); // Start with 25 coins
         if (prices && prices.length > 0) {
           setCryptoData(prices);
-          console.log(`✅ Live API data loaded successfully - ${coinCount} coins`);
+          console.log(`✅ Live API data loaded successfully - ${COINS_PER_PAGE} coins`);
         } else {
           console.log("⚠️ API returned empty data, using mock data");
           setCryptoData(DATA);
@@ -378,50 +386,73 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
       }
     }
     handleGetMarketData();
-  }, [coinCount]); // Now reacts to coinCount changes
+  }, []); // Only run on mount
 
   console.log("CryptoCurrencyList rendering with data:", cryptoData.length, "items");
   
-  const coinCountOptions = [10, 25, 50];
-
-  const handleCoinCountChange = (count) => {
-    setCoinCount(count);
+  const loadMoreCoins = async () => {
+    if (isLoadingMore || !hasMoreData) return;
+    
+    try {
+      setIsLoadingMore(true);
+      const nextPage = currentPage + 1;
+      const startIndex = currentPage * COINS_PER_PAGE + 1;
+      
+      // Limit to 200 coins total to prevent memory issues
+      if (cryptoData.length >= 200) {
+        setHasMoreData(false);
+        return;
+      }
+      
+      const newCoins = await getMarketData(COINS_PER_PAGE, startIndex);
+      
+      if (newCoins && newCoins.length > 0) {
+        setCryptoData(prevData => [...prevData, ...newCoins]);
+        setCurrentPage(nextPage);
+        console.log(`✅ Loaded ${newCoins.length} more coins - Total: ${cryptoData.length + newCoins.length}`);
+        
+        // If we got fewer coins than requested, we've reached the end
+        if (newCoins.length < COINS_PER_PAGE) {
+          setHasMoreData(false);
+        }
+      } else {
+        setHasMoreData(false);
+      }
+    } catch (error) {
+      console.log("⚠️ Failed to load more coins:", error.message);
+      setHasMoreData(false);
+    } finally {
+      setIsLoadingMore(false);
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.subheader}>Markets</Text>
-            <Text style={styles.subtitle}>24h Volume $37.65 Bn</Text>
+            <Text style={[styles.subheader, { color: currentTheme.brand?.primary || currentTheme.brand.primary }]}>Markets</Text>
+            <Text style={[styles.subtitle, { color: currentTheme.text.secondary }]}>24h Volume $37.65 Bn</Text>
           </View>
-          <View style={styles.coinCountContainer}>
-            {coinCountOptions.map((count) => (
-              <TouchableOpacity
-                key={count}
-                style={[
-                  styles.coinCountButton,
-                  coinCount === count && styles.selectedCoinCount,
-                ]}
-                onPress={() => handleCoinCountChange(count)}
-              >
-                <Text
-                  style={[
-                    styles.coinCountText,
-                    coinCount === count && styles.selectedCoinCountText,
-                  ]}
-                >
-                  {count}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        </View>
+        
+        {/* Column Headers */}
+        <View style={styles.columnHeaders}>
+          <View style={styles.leftColumnHeader}>
+            <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted }]}>RANK</Text>
+            <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted, marginLeft: 48 }]}>COIN</Text>
+          </View>
+          <View style={styles.centerColumnHeader}>
+            <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted }]}>CHART</Text>
+          </View>
+          <View style={styles.rightColumnHeader}>
+            <Text style={[styles.columnHeaderText, { color: currentTheme.text.muted }]}>PRICE</Text>
           </View>
         </View>
       </View>
       {isLoading ? (
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>Loading crypto data...</Text>
+          <Text style={[styles.loadingText, { color: currentTheme.text.secondary }]}>Loading crypto data...</Text>
         </View>
       ) : (
         <FlatList
@@ -437,6 +468,24 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
           style={styles.list}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
+          onEndReached={loadMoreCoins}
+          onEndReachedThreshold={0.3}
+          ListFooterComponent={() => 
+            isLoadingMore ? (
+              <View style={styles.loadingMoreContainer}>
+                <Text style={[styles.loadingMoreText, { color: currentTheme.text.secondary }]}>Loading more coins...</Text>
+              </View>
+            ) : !hasMoreData && cryptoData.length > COINS_PER_PAGE ? (
+              <View style={styles.endOfListContainer}>
+                <Text style={[styles.endOfListText, { color: currentTheme.text.muted }]}>No more coins to load</Text>
+              </View>
+            ) : null
+          }
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={10}
+          updateCellsBatchingPeriod={50}
+          initialNumToRender={15}
+          windowSize={10}
         />
       )}
     </View>
@@ -458,6 +507,37 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
+  },
+  columnHeaders: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    marginTop: theme.spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  leftColumnHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  centerColumnHeader: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: theme.spacing.sm,
+  },
+  rightColumnHeader: {
+    alignItems: 'flex-end',
+    minWidth: 100,
+  },
+  columnHeaderText: {
+    fontSize: theme.typography.sizes.caption,
+    fontWeight: theme.typography.weights.bold,
+    fontFamily: theme.typography.fontFamily,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   coinCountContainer: {
     flexDirection: 'row',
@@ -515,6 +595,24 @@ const styles = StyleSheet.create({
   loadingText: {
     color: theme.colors.text.secondary,
     fontSize: theme.typography.sizes.body,
+    fontFamily: theme.typography.fontFamily,
+  },
+  loadingMoreContainer: {
+    paddingVertical: theme.spacing.lg,
+    alignItems: 'center',
+  },
+  loadingMoreText: {
+    color: theme.colors.text.secondary,
+    fontSize: theme.typography.sizes.small,
+    fontFamily: theme.typography.fontFamily,
+  },
+  endOfListContainer: {
+    paddingVertical: theme.spacing.lg,
+    alignItems: 'center',
+  },
+  endOfListText: {
+    color: theme.colors.text.muted,
+    fontSize: theme.typography.sizes.small,
     fontFamily: theme.typography.fontFamily,
   },
 });
