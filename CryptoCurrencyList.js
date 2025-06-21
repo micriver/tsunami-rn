@@ -566,8 +566,8 @@ const styles = StyleSheet.create({
   },
   subheader: {
     color: theme.colors.brand.primary,
-    fontWeight: theme.typography.weights.black,
-    fontSize: theme.typography.sizes.h1,
+    fontWeight: theme.typography.weights.bold,
+    fontSize: theme.typography.sizes.h2, // Reduced from h1 to h2
     marginBottom: theme.spacing.xs,
     fontFamily: theme.typography.fontFamily,
   },
