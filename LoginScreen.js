@@ -18,47 +18,43 @@ export default function LoginScreen({ onLogin }) {
     <View style={styles.container}>
       <StatusBar style='auto' />
 
-      {/* Top News Ticker */}
-      <NewsTicker />
-
-      {/* Main Content */}
-      <View style={styles.content}>
-        {/* App Title */}
-        <View style={styles.titleSection}>
-          <Text style={styles.appTitle}>TSUNAMI</Text>
-          <Text style={styles.subtitle}>Cryptocurrency Trading Platform</Text>
-        </View>
-
-        {/* Login Buttons Section */}
-        <View style={styles.buttonSection}>
-          {/* Primary Login Button */}
-          <TouchableOpacity
-            style={styles.primaryButton}
-            onPress={() => onLogin && onLogin()}
-          >
-            <Text style={styles.primaryButtonText}>Login</Text>
-          </TouchableOpacity>
-
-          {/* Secondary Sign Up Button */}
-          <TouchableOpacity
-            style={styles.secondaryButton}
-            onPress={() => console.log("Sign up pressed")}
-          >
-            <Text style={styles.secondaryButtonText}>Create Account</Text>
-          </TouchableOpacity>
-
-          {/* Tertiary Guest Access Button */}
-          <TouchableOpacity
-            style={styles.tertiaryButton}
-            onPress={() => onLogin && onLogin()}
-          >
-            <Text style={styles.tertiaryButtonText}>Continue as Guest</Text>
-          </TouchableOpacity>
-        </View>
+      {/* App Title */}
+      <View style={styles.titleSection}>
+        <Text style={styles.appTitle}>TSUNAMI</Text>
       </View>
 
-      {/* Bottom Coin Price Ticker */}
-      <CoinTicker direction="right" />
+      {/* News Tickers */}
+      <View style={styles.tickerSection}>
+        <NewsTicker />
+        <CoinTicker direction="right" />
+      </View>
+
+      {/* Login Buttons Section */}
+      <View style={styles.buttonSection}>
+        {/* Primary Login Button */}
+        <TouchableOpacity
+          style={styles.primaryButton}
+          onPress={() => onLogin && onLogin()}
+        >
+          <Text style={styles.primaryButtonText}>Login</Text>
+        </TouchableOpacity>
+
+        {/* Secondary Sign Up Button */}
+        <TouchableOpacity
+          style={styles.secondaryButton}
+          onPress={() => console.log("Sign up pressed")}
+        >
+          <Text style={styles.secondaryButtonText}>Create Account</Text>
+        </TouchableOpacity>
+
+        {/* Tertiary Guest Access Button */}
+        <TouchableOpacity
+          style={styles.tertiaryButton}
+          onPress={() => onLogin && onLogin()}
+        >
+          <Text style={styles.tertiaryButtonText}>Continue as Guest</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -68,33 +64,29 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: theme.colors.background.secondary, // Middle palette color
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: theme.spacing.xl,
-  },
   titleSection: {
     alignItems: 'center',
-    marginBottom: theme.spacing.xxxl * 2,
+    paddingTop: theme.spacing.xxxl * 2,
+    paddingHorizontal: theme.spacing.xl,
   },
   appTitle: {
-    fontSize: theme.typography.sizes.h1 * 1.8,
+    fontSize: 64, // Large fixed size to prevent wrapping
     fontWeight: theme.typography.weights.black,
     color: theme.colors.brand.primary,
-    letterSpacing: 2,
+    letterSpacing: 4,
     fontFamily: theme.typography.fontFamily,
-    marginBottom: theme.spacing.sm,
+    textAlign: 'center',
+    width: '100%',
   },
-  subtitle: {
-    fontSize: theme.typography.sizes.body,
-    color: theme.colors.text.secondary,
-    fontFamily: theme.typography.fontFamily,
-    fontWeight: theme.typography.weights.medium,
+  tickerSection: {
+    marginTop: theme.spacing.xl,
+    height: 80, // Same height as title roughly
   },
   buttonSection: {
-    width: '100%',
-    maxWidth: 300,
+    position: 'absolute',
+    bottom: theme.spacing.xxxl,
+    left: theme.spacing.xl,
+    right: theme.spacing.xl,
   },
   primaryButton: {
     backgroundColor: theme.colors.brand.primary,

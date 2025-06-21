@@ -95,7 +95,7 @@ const CoinTicker = ({ direction = 'left' }) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: 32,
+    height: 40, // Match NewsTicker height
     justifyContent: 'center',
     overflow: 'hidden',
     backgroundColor: 'rgba(0, 0, 0, 0.05)',
