@@ -96,8 +96,9 @@ function AppContent() {
       {/* Coin Detail Modal */}
       <Modal
         visible={isModalVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType="none"
+        presentationStyle="overFullScreen"
+        transparent={true}
         onRequestClose={handleCloseModal}
       >
         <CoinDetailScreen coin={selectedCoin} onClose={handleCloseModal} />
@@ -106,8 +107,9 @@ function AppContent() {
       {/* Settings Modal */}
       <Modal
         visible={isSettingsVisible}
-        animationType="slide"
-        presentationStyle="pageSheet"
+        animationType="none"
+        presentationStyle="overFullScreen"
+        transparent={true}
         onRequestClose={handleCloseSettings}
       >
         <SettingsScreen 

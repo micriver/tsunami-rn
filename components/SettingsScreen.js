@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -8,12 +8,22 @@ import {
   Switch,
   Linking,
   Alert,
+  Animated,
+  PanResponder,
+  Dimensions,
 } from "react-native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import theme from "../theme";
 
+const { height } = Dimensions.get("window");
+
 const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
+  
+  // Animation setup
+  const slideAnim = useRef(new Animated.Value(height)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+  
   const currentIndicators = isDarkMode
     ? theme.colors.dark.indicators
     : theme.colors.indicators;
@@ -23,6 +33,72 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   const currentAccent = isDarkMode
     ? theme.colors.dark.accent
     : theme.colors.accent;
+
+  // Animation effects
+  useEffect(() => {
+    // Slide in animation
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 50, // Leave space at top (50px from top)
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  const handleClose = () => {
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: height,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropOpacity, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      onClose();
+    });
+  };
+
+  // Pan responder for swipe down gesture
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (evt, gestureState) => {
+        return gestureState.dy > 10 && Math.abs(gestureState.dx) < Math.abs(gestureState.dy);
+      },
+      onPanResponderMove: (evt, gestureState) => {
+        const newValue = Math.max(50, 50 + gestureState.dy); // Don't go above starting position
+        slideAnim.setValue(newValue);
+        const opacity = Math.max(0, 1 - (gestureState.dy / height) * 1.5);
+        backdropOpacity.setValue(opacity);
+      },
+      onPanResponderRelease: (evt, gestureState) => {
+        if (gestureState.dy > 100 || gestureState.vy > 0.5) {
+          handleClose();
+        } else {
+          Animated.parallel([
+            Animated.spring(slideAnim, {
+              toValue: 50,
+              useNativeDriver: true,
+            }),
+            Animated.timing(backdropOpacity, {
+              toValue: 1,
+              duration: 200,
+              useNativeDriver: true,
+            }),
+          ]).start();
+        }
+      },
+    })
+  ).current;
 
   const handleWebsitePress = () => {
     const websiteUrl = "https://github.com/micriver/tsunami-rn";
@@ -113,12 +189,37 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
   );
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: currentTheme.background.primary },
-      ]}
-    >
+    <View style={styles.modalContainer}>
+      {/* Backdrop */}
+      <Animated.View 
+        style={[
+          styles.backdrop,
+          { opacity: backdropOpacity }
+        ]}
+      />
+      
+      {/* Modal Content */}
+      <Animated.View
+        style={[
+          styles.modalContent,
+          {
+            transform: [{ translateY: slideAnim }],
+            backgroundColor: currentTheme.background.primary,
+          },
+        ]}
+        {...panResponder.panHandlers}
+      >
+        {/* Drag Handle */}
+        <View style={styles.dragHandle}>
+          <View style={[styles.dragIndicator, { backgroundColor: currentTheme.text.muted }]} />
+        </View>
+        
+        <View
+          style={[
+            styles.container,
+            { backgroundColor: currentTheme.background.primary },
+          ]}
+        >
       {/* Header */}
       <View
         style={[
@@ -135,7 +236,7 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           Settings
         </Text>
         <TouchableOpacity
-          onPress={onClose}
+          onPress={handleClose}
           style={[
             styles.closeButton,
             { backgroundColor: currentTheme.background.secondary },
@@ -269,7 +370,6 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           <View style={styles.socialButtons}>
             <TouchableOpacity 
               style={[styles.socialButton, { backgroundColor: currentTheme.background.primary }]}
-              onPress={() => handleSocialPress('twitter')}
             >
               <FontAwesome 
                 name="twitter" 
@@ -280,7 +380,6 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
             
             <TouchableOpacity 
               style={[styles.socialButton, { backgroundColor: currentTheme.background.primary }]}
-              onPress={() => handleSocialPress('instagram')}
             >
               <FontAwesome 
                 name="instagram" 
@@ -291,11 +390,41 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           </View>
         </View>
       </View>
+        </View>
+      </Animated.View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    flex: 1,
+    borderTopLeftRadius: theme.borderRadius.xl,
+    borderTopRightRadius: theme.borderRadius.xl,
+    overflow: 'hidden',
+  },
+  dragHandle: {
+    alignItems: 'center',
+    paddingVertical: theme.spacing.sm,
+  },
+  dragIndicator: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    opacity: 0.3,
+  },
   container: {
     flex: 1,
   },
@@ -380,6 +509,7 @@ const styles = StyleSheet.create({
   socialFooter: {
     paddingVertical: theme.spacing.md,
     paddingHorizontal: theme.spacing.lg,
+    paddingBottom: theme.spacing.xl, // Add extra bottom spacing
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
