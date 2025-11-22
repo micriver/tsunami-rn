@@ -9,6 +9,8 @@ import {
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { NavigationContainer } from '@react-navigation/native';
+import MainNavigator from "./src/navigation/MainNavigator";
 import CryptoCurrencyList from "./src/screens/CryptoCurrencyList";
 import LoginScreen from "./src/screens/LoginScreen";
 import CoinDetailScreen from "./src/screens/CoinDetailScreen";
@@ -87,7 +89,9 @@ function AppContent() {
         <NewsTicker />
         
         <View style={styles.container}>
-          <CryptoCurrencyList onCoinSelect={handleCoinSelect} />
+          <NavigationContainer>
+            <MainNavigator onCoinSelect={handleCoinSelect} />
+          </NavigationContainer>
           <StatusBar style={isDarkMode ? 'light' : 'dark'} />
         </View>
         
