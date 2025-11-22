@@ -7,12 +7,12 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import CryptocurrencyListItem from "./CryptocurrencyListItem";
+import CryptocurrencyListItem from "../components/CryptocurrencyListItem";
 import React, { useEffect, useState } from "react";
-import { getMarketData } from "./apis/coinGeckoAPI";
-import theme from "./theme";
-import { useTheme } from "./context/ThemeContext";
-import FearGreedIndex from "./components/FearGreedIndex";
+import { getMarketData } from "../apis/coinGeckoAPI";
+import theme from "../theme/theme";
+import { useTheme } from "../context/ThemeContext";
+import FearGreedIndex from "../components/FearGreedIndex";
 
 const DATA = [
   {

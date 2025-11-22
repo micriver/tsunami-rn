@@ -9,14 +9,14 @@ import {
   View,
 } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import CryptoCurrencyList from "./CryptoCurrencyList";
-import LoginScreen from "./LoginScreen";
-import CoinDetailScreen from "./CoinDetailScreen";
-import SettingsScreen from "./components/SettingsScreen";
-import NewsTicker from "./components/NewsTicker";
+import CryptoCurrencyList from "./src/screens/CryptoCurrencyList";
+import LoginScreen from "./src/screens/LoginScreen";
+import CoinDetailScreen from "./src/screens/CoinDetailScreen";
+import SettingsScreen from "./src/components/SettingsScreen";
+import NewsTicker from "./src/components/NewsTicker";
 import { MaterialIcons } from "@expo/vector-icons";
-import theme from "./theme";
-import { ThemeProvider, useTheme } from "./context/ThemeContext";
+import theme from "./src/theme/theme";
+import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 
 
 function AppContent() {
@@ -88,7 +88,7 @@ function AppContent() {
         
         <View style={styles.container}>
           <CryptoCurrencyList onCoinSelect={handleCoinSelect} />
-          <StatusBar style='auto' />
+          <StatusBar style={isDarkMode ? 'light' : 'dark'} />
         </View>
         
       </SafeAreaView>

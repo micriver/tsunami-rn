@@ -13,7 +13,9 @@ import {
   Dimensions,
 } from "react-native";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
-import theme from "../theme";
+import { StatusBar } from "expo-status-bar";
+import theme from "../theme/theme";
+import { useTheme } from "../context/ThemeContext";
 
 const { height } = Dimensions.get("window");
 
@@ -190,6 +192,7 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
 
   return (
     <View style={styles.modalContainer}>
+      <StatusBar style={isDarkMode ? "light" : "auto"} />
       {/* Backdrop */}
       <Animated.View 
         style={[

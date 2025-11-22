@@ -12,11 +12,12 @@ import {
   TextInput,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
-import theme from "./theme";
-import DetailChart from "./components/DetailChart";
-import AnimatedPrice from "./components/AnimatedPrice";
-import { useTheme } from "./context/ThemeContext";
-import { getCoinDetails } from "./apis/coinGeckoAPI";
+import { StatusBar } from "expo-status-bar";
+import theme from "../theme/theme";
+import DetailChart from "../components/DetailChart";
+import AnimatedPrice from "../components/AnimatedPrice";
+import { useTheme } from "../context/ThemeContext";
+import { getCoinDetails } from "../apis/coinGeckoAPI";
 
 const { height, width } = Dimensions.get("window");
 
@@ -184,6 +185,7 @@ export default function CoinDetailScreen({ coin, onClose }) {
 
   return (
     <View style={styles.modalContainer}>
+      <StatusBar style={isDarkMode ? "light" : "auto"} />
       {/* Backdrop */}
       <Animated.View style={[styles.backdrop, { opacity: backdropOpacity }]} />
 

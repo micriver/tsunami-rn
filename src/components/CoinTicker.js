@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { View, Text, StyleSheet, Animated, Dimensions } from "react-native";
-import theme from "../theme";
+import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
 
 const { width: screenWidth } = Dimensions.get("window");

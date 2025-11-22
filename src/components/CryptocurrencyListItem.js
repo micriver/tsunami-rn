@@ -7,10 +7,10 @@ import {
   Animated,
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
-import theme from "./theme";
-import MiniChart from "./components/MiniChart";
-import AnimatedPrice from "./components/AnimatedPrice";
-import { useTheme } from "./context/ThemeContext";
+import theme from "../theme/theme";
+import MiniChart from "./MiniChart";
+import AnimatedPrice from "./AnimatedPrice";
+import { useTheme } from "../context/ThemeContext";
 
 const CryptocurrencyListItem = ({ currency, index, onPress }) => {
   const { name, symbol, current_price, price_change_24h, image, sparkline_in_7d } = currency;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Polyline } from 'react-native-svg';
-import theme from '../theme';
+import theme from '../theme/theme';
 
 const MiniChart = ({ sparklineData, priceChange }) => {
   // Handle missing or invalid sparkline data

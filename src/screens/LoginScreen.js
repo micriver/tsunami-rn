@@ -5,12 +5,13 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
+  // Image,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import theme from "./theme";
-import NewsTicker from "./components/NewsTicker";
-import CoinTicker from "./components/CoinTicker";
-import { useTheme } from "./context/ThemeContext";
+import theme from "../theme/theme";
+import NewsTicker from "../components/NewsTicker";
+import CoinTicker from "../components/CoinTicker";
+import { useTheme } from "../context/ThemeContext";
 
 const { height, width } = Dimensions.get("window");
 
@@ -31,8 +32,12 @@ export default function LoginScreen({ onLogin }) {
         },
       ]}
     >
-      <StatusBar style='auto' />
-
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
+      {/* <Image 
+        source={require('../../assets/wave_background.png')} 
+        style={StyleSheet.absoluteFill}
+        resizeMode="cover"
+      /> */}
       {/* App Title */}
       <View style={styles.titleSection}>
         <Text

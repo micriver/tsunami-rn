@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { getFearGreedIndex } from '../apis/coinGeckoAPI';
-import theme from '../theme';
+import theme from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 
 const FearGreedIndex = () => {

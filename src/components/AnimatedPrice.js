@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from "react";
-import { Animated, Easing } from "react-native";
-import theme from "../theme";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, Text, StyleSheet, Easing } from "react-native";
+import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
 
 const AnimatedPrice = ({

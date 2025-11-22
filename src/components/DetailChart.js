@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import Svg, { Polyline, Circle, Line, Text as SvgText } from "react-native-svg";
 import { getCoinHistoricalData } from "../apis/coinGeckoAPI";
-import theme from "../theme";
+import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
 
 const { width } = Dimensions.get("window");
