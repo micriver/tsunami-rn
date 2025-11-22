@@ -12,7 +12,6 @@ import React, { useEffect, useState } from "react";
 import { getMarketData } from "../apis/coinGeckoAPI";
 import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
-import FearGreedIndex from "../components/FearGreedIndex";
 
 const DATA = [
   {
@@ -456,17 +455,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
 
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
-      {/* Fear & Greed Index */}
-      <FearGreedIndex />
-      
       <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <View>
-            <Text style={[styles.subheader, { color: currentTheme.brand?.primary || currentTheme.brand.primary }]}>Markets</Text>
-            <Text style={[styles.subtitle, { color: currentTheme.text.secondary }]}>24h Volume {formatVolume(totalVolume)}</Text>
-          </View>
-        </View>
-        
         {/* Column Headers */}
         <View style={styles.columnHeaders}>
           <View style={styles.leftColumnHeader}>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import CryptoCurrencyList from '../screens/CryptoCurrencyList';
+import MarketsScreen from '../screens/MarketsScreen';
 import WatchlistScreen from '../screens/WatchlistScreen';
 import NewsScreen from '../screens/NewsScreen';
 import theme from '../theme/theme';
@@ -40,15 +41,15 @@ export default function MainNavigator({ onCoinSelect }) {
     >
       <Tab.Screen 
         name="Markets" 
+        component={MarketsScreen}
         options={{ tabBarLabel: 'Markets' }}
+      />
+      <Tab.Screen 
+        name="Watchlist" 
+        options={{ tabBarLabel: 'Watchlist' }}
       >
         {props => <CryptoCurrencyList {...props} onCoinSelect={onCoinSelect} />}
       </Tab.Screen>
-      <Tab.Screen 
-        name="Watchlist" 
-        component={WatchlistScreen} 
-        options={{ tabBarLabel: 'Watchlist' }}
-      />
       <Tab.Screen 
         name="News" 
         component={NewsScreen} 

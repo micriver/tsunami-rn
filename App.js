@@ -85,8 +85,7 @@ function AppContent() {
           </View>
         </View>
         
-        {/* News Ticker between title and markets */}
-        <NewsTicker />
+        {/* News Ticker moved to NewsScreen */}
         
         <View style={styles.container}>
           <NavigationContainer>
