@@ -40,16 +40,16 @@ export default function MainNavigator({ onCoinSelect }) {
       }}
     >
       <Tab.Screen 
-        name="Markets" 
-        component={MarketsScreen}
-        options={{ tabBarLabel: 'Markets' }}
-      />
-      <Tab.Screen 
-        name="Watchlist" 
-        options={{ tabBarLabel: 'Watchlist' }}
+        name="Coins" 
+        options={{ tabBarLabel: 'Coins' }}
       >
         {props => <CryptoCurrencyList {...props} onCoinSelect={onCoinSelect} />}
       </Tab.Screen>
+      <Tab.Screen 
+        name="Portfolio" 
+        component={WatchlistScreen}
+        options={{ tabBarLabel: 'Portfolio' }}
+      />
       <Tab.Screen 
         name="News" 
         component={NewsScreen} 

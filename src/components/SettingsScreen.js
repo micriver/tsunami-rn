@@ -287,46 +287,7 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
           />
         </View>
 
-        {/* Account Actions Section */}
-        <View style={styles.section}>
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: currentTheme.text.secondary },
-            ]}
-          >
-            Actions
-          </Text>
 
-          <TouchableOpacity
-            style={[
-              styles.settingsItem,
-              styles.logoutItem,
-              {
-                backgroundColor: currentTheme.background.secondary,
-                borderColor: currentIndicators.negative + "20",
-              },
-            ]}
-            onPress={onLogout}
-          >
-            <View style={styles.settingsItemLeft}>
-              <MaterialIcons
-                name='logout'
-                size={24}
-                color={currentIndicators.negative}
-                style={styles.settingsIcon}
-              />
-              <Text
-                style={[
-                  styles.settingsTitle,
-                  { color: currentIndicators.negative },
-                ]}
-              >
-                Log Out
-              </Text>
-            </View>
-          </TouchableOpacity>
-        </View>
 
         {/* App Info Section */}
         <View style={styles.section}>

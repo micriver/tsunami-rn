@@ -22,7 +22,7 @@ import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 
 
 function AppContent() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
