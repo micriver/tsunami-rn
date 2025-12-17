@@ -16,11 +16,14 @@ import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
 import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
+import { useWatchlist } from "../context/WatchlistContext";
 
 const { height } = Dimensions.get("window");
 
-const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
+const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle, onOpenWatchlist }) => {
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
+  const { lists, activeListId } = useWatchlist();
+  const watchlistCount = lists[activeListId]?.coins.length || 0;
   
   // Animation setup
   const slideAnim = useRef(new Animated.Value(height)).current;
@@ -281,9 +284,9 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle }) => {
 
           <SettingsItem
             icon='star'
-            title='Watchlist'
-            subtitle='12 coins tracked'
-            onPress={() => {}}
+            title='My Watchlist'
+            subtitle={`${watchlistCount} coins tracked`}
+            onPress={onOpenWatchlist}
           />
         </View>
 

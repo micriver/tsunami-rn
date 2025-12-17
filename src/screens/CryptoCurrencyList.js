@@ -501,7 +501,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
               </View>
             ) : null
           }
-          removeClippedSubviews={true}
+          // removeClippedSubviews={true} // Removed to fix swipe gestures
           maxToRenderPerBatch={10}
           updateCellsBatchingPeriod={50}
           initialNumToRender={15}

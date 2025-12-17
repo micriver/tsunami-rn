@@ -15,10 +15,12 @@ import CryptoCurrencyList from "./src/screens/CryptoCurrencyList";
 import LoginScreen from "./src/screens/LoginScreen";
 import CoinDetailScreen from "./src/screens/CoinDetailScreen";
 import SettingsScreen from "./src/components/SettingsScreen";
+import MyWatchlistScreen from "./src/screens/MyWatchlistScreen";
 import NewsTicker from "./src/components/NewsTicker";
 import { MaterialIcons } from "@expo/vector-icons";
 import theme from "./src/theme/theme";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
+import { WatchlistProvider } from "./src/context/WatchlistContext";
 
 
 function AppContent() {
@@ -26,6 +28,7 @@ function AppContent() {
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
+  const [isWatchlistVisible, setIsWatchlistVisible] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
   
   // Get theme colors based on dark mode state
@@ -40,6 +43,7 @@ function AppContent() {
     setSelectedCoin(null);
     setIsModalVisible(false);
     setIsSettingsVisible(false);
+    setIsWatchlistVisible(false);
   };
 
   const handleOpenSettings = () => {
@@ -48,6 +52,15 @@ function AppContent() {
 
   const handleCloseSettings = () => {
     setIsSettingsVisible(false);
+  };
+
+  const handleOpenWatchlist = () => {
+    setIsSettingsVisible(false); // Close settings if open
+    setIsWatchlistVisible(true);
+  };
+
+  const handleCloseWatchlist = () => {
+    setIsWatchlistVisible(false);
   };
 
   const handleCoinSelect = (coin) => {
@@ -120,6 +133,23 @@ function AppContent() {
           onLogout={handleLogout}
           isDarkMode={isDarkMode}
           onThemeToggle={toggleTheme}
+          onOpenWatchlist={handleOpenWatchlist}
+        />
+      </Modal>
+
+      {/* My Watchlist Modal */}
+      <Modal
+        visible={isWatchlistVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleCloseWatchlist}
+      >
+        <MyWatchlistScreen 
+            onCoinSelect={(coin) => {
+                handleCloseWatchlist();
+                handleCoinSelect(coin);
+            }} 
+            onClose={handleCloseWatchlist}
         />
       </Modal>
     </View>
@@ -131,7 +161,9 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider>
-        <AppContent />
+        <WatchlistProvider>
+          <AppContent />
+        </WatchlistProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

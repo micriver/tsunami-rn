@@ -162,6 +162,30 @@ export const getCoinDetails = async (coinId) => {
   }
 };
 
+export const getWatchlistData = async (coinIds) => {
+  if (!coinIds || coinIds.length === 0) return [];
+  const idsParam = coinIds.join(',');
+  const cacheKey = `watchlist_data_${idsParam}`;
+  
+  // Check cache first
+  const cachedData = getCachedData(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  try {
+    const response = await rateLimitedRequest(() => 
+        axios.get(`${BASE_URL}/coins/markets?vs_currency=usd&ids=${idsParam}&order=market_cap_desc&sparkline=true&price_change_percentage=24h&locale=en`)
+    );
+    
+    setCachedData(cacheKey, response.data);
+    return response.data;
+  } catch (error) {
+      console.error('Error fetching watchlist data:', error);
+      throw error;
+  }
+};
+
 export const getFearGreedIndex = async () => {
   const cacheKey = 'fear_greed_index';
   

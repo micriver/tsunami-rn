@@ -1,5 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useContext, useState } from 'react';
 
 const ThemeContext = createContext();
 
@@ -13,34 +12,10 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // No async load needed
 
-  // Load theme preference from storage on app start
-  useEffect(() => {
-    loadThemePreference();
-  }, []);
-
-  const loadThemePreference = async () => {
-    try {
-      const savedTheme = await AsyncStorage.getItem('theme_preference');
-      if (savedTheme !== null) {
-        setIsDarkMode(savedTheme === 'dark');
-      }
-    } catch (error) {
-      console.log('Error loading theme preference:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const toggleTheme = async () => {
-    try {
-      const newTheme = !isDarkMode;
-      setIsDarkMode(newTheme);
-      await AsyncStorage.setItem('theme_preference', newTheme ? 'dark' : 'light');
-    } catch (error) {
-      console.log('Error saving theme preference:', error);
-    }
+  const toggleTheme = () => {
+    setIsDarkMode(prev => !prev);
   };
 
   const value = {

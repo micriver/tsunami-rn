@@ -17,6 +17,7 @@ import theme from "../theme/theme";
 import DetailChart from "../components/DetailChart";
 import AnimatedPrice from "../components/AnimatedPrice";
 import { useTheme } from "../context/ThemeContext";
+import { useWatchlist } from "../context/WatchlistContext";
 import { getCoinDetails } from "../apis/coinGeckoAPI";
 
 const { height, width } = Dimensions.get("window");
@@ -28,6 +29,18 @@ export default function CoinDetailScreen({ coin, onClose }) {
   const [cryptoAmount, setCryptoAmount] = useState("1");
   const [usdAmount, setUsdAmount] = useState("");
   const { isDarkMode } = useTheme();
+  const { lists, addCoinToList, removeCoinFromList } = useWatchlist();
+  
+  // Check if coin is in favorites
+  const isFavorites = lists['favorites']?.coins.includes(coin?.id);
+
+  const toggleFavorite = () => {
+    if (isFavorites) {
+      removeCoinFromList('favorites', coin.id);
+    } else {
+      addCoinToList('favorites', coin.id);
+    }
+  };
 
   // Animation setup
   const slideAnim = useRef(new Animated.Value(height)).current;
@@ -243,19 +256,34 @@ export default function CoinDetailScreen({ coin, onClose }) {
                 </Text>
               </View>
             </View>
-            <TouchableOpacity
-              onPress={handleClose}
-              style={[
-                styles.closeButton,
-                { backgroundColor: currentTheme.background.secondary },
-              ]}
-            >
-              <MaterialIcons
-                name='close'
-                size={28}
-                color={currentTheme.text.primary}
-              />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', gap: theme.spacing.md }}>
+              <TouchableOpacity
+                onPress={toggleFavorite}
+                style={[
+                  styles.closeButton,
+                  { backgroundColor: currentTheme.background.secondary },
+                ]}
+              >
+                <MaterialIcons
+                  name={isFavorites ? 'star' : 'star-border'}
+                  size={28}
+                  color={isFavorites ? (currentTheme.accent?.orange || theme.colors.accent.orange) : currentTheme.text.secondary}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleClose}
+                style={[
+                  styles.closeButton,
+                  { backgroundColor: currentTheme.background.secondary },
+                ]}
+              >
+                <MaterialIcons
+                  name='close'
+                  size={28}
+                  color={currentTheme.text.primary}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <ScrollView
