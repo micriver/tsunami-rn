@@ -85,15 +85,26 @@ function AppContent() {
             <Text style={[styles.title, { color: currentTheme.brand?.primary || currentTheme.brand.primary }]}>TSUNAMI</Text>
           </View>
           <View style={styles.headerRight}>
-            <TouchableOpacity onPress={toggleTheme} style={styles.themeToggle}>
+            <TouchableOpacity onPress={toggleTheme} style={styles.headerIcon}>
               <MaterialIcons 
                 name={isDarkMode ? 'light-mode' : 'dark-mode'} 
-                size={28} 
+                size={24} 
                 color={currentTheme.text?.secondary || theme.colors.text.secondary} 
               />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleOpenSettings}>
-              <MaterialIcons name='account-circle' size={42} color={currentTheme.accent?.orange || theme.colors.accent.orange} />
+            <TouchableOpacity onPress={handleOpenSettings} style={styles.headerIcon}>
+              <MaterialIcons 
+                name="settings" 
+                size={24} 
+                color={currentTheme.text?.secondary || theme.colors.text.secondary} 
+              />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.headerIcon}>
+              <MaterialIcons 
+                name="account-circle" 
+                size={32} 
+                color={currentTheme.accent?.orange || theme.colors.accent.orange} 
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -186,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: theme.spacing.md,
   },
-  themeToggle: {
+  headerIcon: {
     padding: theme.spacing.xs,
   },
   background: {
