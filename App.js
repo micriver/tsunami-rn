@@ -94,13 +94,6 @@ function AppContent() {
             </TouchableOpacity>
             <TouchableOpacity onPress={handleOpenSettings} style={styles.headerIcon}>
               <MaterialIcons 
-                name="settings" 
-                size={24} 
-                color={currentTheme.text?.secondary || theme.colors.text.secondary} 
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.headerIcon}>
-              <MaterialIcons 
                 name="account-circle" 
                 size={32} 
                 color={currentTheme.accent?.orange || theme.colors.accent.orange} 

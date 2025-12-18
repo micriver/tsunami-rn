@@ -80,9 +80,6 @@ export default function MainNavigator({ onCoinSelect }) {
       </Tab.Screen>
       <Tab.Screen name="News" component={NewsScreen} />
       <Tab.Screen name="Portfolio" component={PortfolioScreen} />
-      <Tab.Screen name="Watchlist">
-        {props => <WatchlistScreen {...props} onCoinSelect={onCoinSelect} />}
-      </Tab.Screen>
     </Tab.Navigator>
   );
 }
