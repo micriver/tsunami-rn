@@ -59,11 +59,11 @@ Go to this repo: https://github.com/micriver/tsunami-rn/ and follow the README i
 
 Based on their answer:
 
-- **Option A**: Verify Xcode is installed. Run `npm run ios`.
-- **Option B**: Verify Android Studio and an emulator are configured. Run `npm run android`.
+- **Option A**: Verify Xcode is installed. Run `npx expo start --ios`.
+- **Option B**: Verify Android Studio and an emulator are configured. Run `npx expo start --android`.
 - **Option C**:
   1. Instruct user to install **Expo Go** on their phone from the App Store or Play Store.
-  2. Run `npm start` to start the development server.
+  2. Run `npx expo start` to start the development server.
   3. Tell user: _"Scan the QR code shown in your terminal with your phone's camera (iPhone) or the Expo Go app (Android). Your phone and computer must be on the same WiFi network."_
 
 ---
@@ -113,13 +113,13 @@ Based on the user's setup choice in Step 2, run the appropriate command:
 
 ```bash
 # For iOS Simulator
-npm run ios
+npx expo start --ios
 
 # For Android Emulator
-npm run android
+npx expo start --android
 
 # For Expo Go on physical device
-npm start
+npx expo start
 ```
 
 ### Step 4: Confirm Success
@@ -146,7 +146,7 @@ If there are errors, help the user debug. Common issues:
 git clone https://github.com/micriver/tsunami-rn.git
 cd tsunami-rn
 npm install
-npm start
+npx expo start
 ```
 
 Scan the QR code with Expo Go on your phone.
