@@ -1,9 +1,11 @@
 import React from 'react';
+import { View } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { Ionicons } from '@expo/vector-icons';
 import CryptoCurrencyList from '../screens/CryptoCurrencyList';
-import MarketsScreen from '../screens/MarketsScreen';
-import WatchlistScreen from '../screens/WatchlistScreen';
 import NewsScreen from '../screens/NewsScreen';
+import PortfolioScreen from '../screens/PortfolioScreen';
+import WatchlistScreen from '../screens/WatchlistScreen';
 import theme from '../theme/theme';
 import { useTheme } from '../context/ThemeContext';
 
@@ -13,49 +15,71 @@ export default function MainNavigator({ onCoinSelect }) {
   const { isDarkMode } = useTheme();
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
 
+  const getIcon = (routeName, focused, color) => {
+    let iconName;
+    switch (routeName) {
+      case 'Markets':
+        iconName = focused ? 'trending-up' : 'trending-up-outline';
+        break;
+      case 'News':
+        iconName = focused ? 'newspaper' : 'newspaper-outline';
+        break;
+      case 'Portfolio':
+        iconName = focused ? 'pie-chart' : 'pie-chart-outline';
+        break;
+      case 'Watchlist':
+        iconName = focused ? 'star' : 'star-outline';
+        break;
+      default:
+        iconName = 'ellipse';
+    }
+    return <Ionicons name={iconName} size={22} color={color} />;
+  };
+
   return (
     <Tab.Navigator
-      screenOptions={{
-        tabBarStyle: {
-          backgroundColor: currentTheme.background.primary,
-          elevation: 0, // Remove shadow on Android
-          shadowOpacity: 0, // Remove shadow on iOS
-          borderBottomWidth: 1,
-          borderBottomColor: currentTheme.background.tertiary,
-        },
-        tabBarLabelStyle: {
-          fontFamily: theme.typography.fontFamily,
-          fontWeight: theme.typography.weights.bold,
-          fontSize: theme.typography.sizes.small,
-          textTransform: 'uppercase',
-        },
+      tabBarPosition="bottom"
+      screenOptions={({ route }) => ({
+        swipeEnabled: true,
+        tabBarShowIcon: true,
+        tabBarShowLabel: true,
+        tabBarIcon: ({ focused, color }) => getIcon(route.name, focused, color),
         tabBarActiveTintColor: currentTheme.brand?.primary || theme.colors.brand.primary,
         tabBarInactiveTintColor: currentTheme.text.secondary,
+        tabBarStyle: {
+          backgroundColor: currentTheme.background.primary,
+          borderTopWidth: 1,
+          borderTopColor: currentTheme.background.tertiary,
+          elevation: 0,
+          shadowOpacity: 0,
+        },
+        tabBarItemStyle: {
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          paddingVertical: 6,
+        },
+        tabBarLabelStyle: {
+          fontSize: theme.typography.sizes.small,
+          fontWeight: theme.typography.weights.medium,
+          textTransform: 'none',
+          marginTop: 2,
+        },
         tabBarIndicatorStyle: {
           backgroundColor: currentTheme.brand?.primary || theme.colors.brand.primary,
           height: 3,
           borderRadius: 1.5,
+          position: 'absolute',
+          top: 0,
         },
-        swipeEnabled: true,
-      }}
+        tabBarPressColor: 'transparent',
+      })}
     >
-      <Tab.Screen 
-        name="Coins" 
-        options={{ tabBarLabel: 'Coins' }}
-      >
+      <Tab.Screen name="Markets">
         {props => <CryptoCurrencyList {...props} onCoinSelect={onCoinSelect} />}
       </Tab.Screen>
-      <Tab.Screen 
-        name="Portfolio" 
-        options={{ tabBarLabel: 'Portfolio' }}
-      >
-        {props => <WatchlistScreen {...props} onCoinSelect={onCoinSelect} />}
-      </Tab.Screen>
-      <Tab.Screen 
-        name="News" 
-        component={NewsScreen} 
-        options={{ tabBarLabel: 'News' }}
-      />
+      <Tab.Screen name="News" component={NewsScreen} />
+      <Tab.Screen name="Portfolio" component={PortfolioScreen} />
     </Tab.Navigator>
   );
 }
