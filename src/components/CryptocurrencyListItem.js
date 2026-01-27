@@ -1,5 +1,4 @@
 import {
-  Image,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -7,6 +6,7 @@ import {
   Animated,
   Alert
 } from "react-native";
+import { Image } from 'expo-image';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState, useEffect, useRef } from "react";
@@ -224,7 +224,13 @@ const CryptocurrencyListItem = ({ currency, index, onPress }) => {
             <Text style={[styles.rankText, { color: currentTheme.text.muted }]}>
                 {index + 1}
             </Text>
-            <Image source={{ uri: image }} style={styles.coinImage} />
+            <Image
+                source={{ uri: image }}
+                style={styles.coinImage}
+                cachePolicy="memory-disk"
+                contentFit="cover"
+                transition={200}
+              />
             <View style={styles.coinInfo}>
                 <Text style={[styles.coinName, { color: currentTheme.text.primary }]} numberOfLines={1} ellipsizeMode="tail" adjustsFontSizeToFit={true} minimumFontScale={0.7}>{name}</Text>
                 <Text style={[styles.coinSymbol, { color: currentTheme.text.secondary }]}>{symbol.toUpperCase()}</Text>
