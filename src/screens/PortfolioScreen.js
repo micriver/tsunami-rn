@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'rea
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import theme from '../theme/theme';
+import ConnectWalletModal from '../components/ConnectWalletModal';
 
 // Demo holdings data
 const DEMO_HOLDINGS = [
@@ -122,9 +123,14 @@ export default function PortfolioScreen() {
   const { isDarkMode } = useTheme();
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
   const [holdings] = useState(DEMO_HOLDINGS);
+  const [isWalletModalVisible, setIsWalletModalVisible] = useState(false);
 
   const handleConnectWallet = () => {
-    console.log('Connect Wallet pressed - will implement QR scanning later');
+    setIsWalletModalVisible(true);
+  };
+
+  const handleCloseWalletModal = () => {
+    setIsWalletModalVisible(false);
   };
 
   const totalValue = calculateTotalValue(holdings);
@@ -202,6 +208,11 @@ export default function PortfolioScreen() {
           <Text style={styles.primaryButtonText}>Connect Wallet</Text>
         </TouchableOpacity>
       </View>
+
+      <ConnectWalletModal
+        visible={isWalletModalVisible}
+        onClose={handleCloseWalletModal}
+      />
     </View>
   );
 }
