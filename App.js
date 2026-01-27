@@ -24,6 +24,7 @@ import theme from "./src/theme/theme";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { WatchlistProvider } from "./src/context/WatchlistContext";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
+import { ToastProvider, useToast, setGlobalToastRef } from "./src/components/Toast";
 
 function AppContent() {
   const { isLoggedIn, isLoading: isAuthLoading, login, logout } = useAuth();
@@ -35,6 +36,12 @@ function AppContent() {
   const [splashFinished, setSplashFinished] = useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const toast = useToast();
+
+  // Set global toast reference for API calls
+  useEffect(() => {
+    setGlobalToastRef(toast);
+  }, [toast]);
 
   // Get theme colors based on dark mode state
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
@@ -227,7 +234,9 @@ export default function App() {
       <AuthProvider>
         <ThemeProvider>
           <WatchlistProvider>
-            <AppContent />
+            <ToastProvider>
+              <AppContent />
+            </ToastProvider>
           </WatchlistProvider>
         </ThemeProvider>
       </AuthProvider>
