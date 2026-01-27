@@ -6,9 +6,12 @@ import {
   Text,
   View,
   TouchableOpacity,
+  TextInput,
 } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 import CryptocurrencyListItem from "../components/CryptocurrencyListItem";
-import React, { useEffect, useState } from "react";
+import { MarketListSkeleton } from "../components/SkeletonLoader";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { getMarketData } from "../apis/coinGeckoAPI";
 import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
@@ -354,6 +357,23 @@ const DATA = [
   },
 ];
 
+// Custom debounce hook
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 const CryptoCurrencyList = ({ onCoinSelect }) => {
   const [cryptoData, setCryptoData] = useState(DATA); // Start with mock data as fallback
   const [isLoading, setIsLoading] = useState(true);
@@ -361,11 +381,35 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [totalVolume, setTotalVolume] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef(null);
   const COINS_PER_PAGE = 25;
   const { isDarkMode } = useTheme();
-  
+
+  // Debounce search query (300ms)
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+
   // Get theme colors based on dark mode state
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
+
+  // Filter coins based on search query
+  const filteredData = useMemo(() => {
+    if (!debouncedSearchQuery.trim()) {
+      return cryptoData;
+    }
+    const query = debouncedSearchQuery.toLowerCase().trim();
+    return cryptoData.filter(
+      (coin) =>
+        coin.name.toLowerCase().includes(query) ||
+        coin.symbol.toLowerCase().includes(query)
+    );
+  }, [cryptoData, debouncedSearchQuery]);
+
+  // Clear search
+  const handleClearSearch = useCallback(() => {
+    setSearchQuery('');
+    searchInputRef.current?.blur();
+  }, []);
 
   // Calculate total volume from current crypto data
   const calculateTotalVolume = (data) => {
@@ -456,6 +500,36 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
       <View style={styles.header}>
+        {/* Search Bar */}
+        <View style={[styles.searchContainer, { backgroundColor: currentTheme.background.secondary }]}>
+          <Ionicons
+            name="search"
+            size={20}
+            color={currentTheme.text.muted}
+            style={styles.searchIcon}
+          />
+          <TextInput
+            ref={searchInputRef}
+            style={[styles.searchInput, { color: currentTheme.text.primary }]}
+            placeholder="Search coins..."
+            placeholderTextColor={currentTheme.text.muted}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            autoCapitalize="none"
+            autoCorrect={false}
+            returnKeyType="search"
+          />
+          {searchQuery.length > 0 && (
+            <TouchableOpacity onPress={handleClearSearch} style={styles.clearButton}>
+              <Ionicons
+                name="close-circle"
+                size={20}
+                color={currentTheme.text.muted}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+
         {/* Column Headers */}
         <View style={styles.columnHeaders}>
           <View style={styles.leftColumnHeader}>
@@ -471,16 +545,28 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
         </View>
       </View>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: currentTheme.text.secondary }]}>Loading crypto data...</Text>
+        <MarketListSkeleton count={10} />
+      ) : filteredData.length === 0 ? (
+        <View style={styles.noResultsContainer}>
+          <Ionicons
+            name="search-outline"
+            size={48}
+            color={currentTheme.text.muted}
+          />
+          <Text style={[styles.noResultsText, { color: currentTheme.text.secondary }]}>
+            No results found
+          </Text>
+          <Text style={[styles.noResultsSubtext, { color: currentTheme.text.muted }]}>
+            Try searching for a different coin
+          </Text>
         </View>
       ) : (
         <FlatList
-          data={cryptoData}
+          data={filteredData}
           renderItem={({ item, index }) => (
-            <CryptocurrencyListItem 
-              currency={item} 
-              index={index} 
+            <CryptocurrencyListItem
+              currency={item}
+              index={index}
               onPress={() => onCoinSelect && onCoinSelect(item)}
             />
           )}
@@ -488,18 +574,20 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
           style={styles.list}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
-          onEndReached={loadMoreCoins}
+          onEndReached={debouncedSearchQuery ? null : loadMoreCoins}
           onEndReachedThreshold={0.3}
-          ListFooterComponent={() => 
-            isLoadingMore ? (
-              <View style={styles.loadingMoreContainer}>
-                <Text style={[styles.loadingMoreText, { color: currentTheme.text.secondary }]}>Loading more coins...</Text>
-              </View>
-            ) : !hasMoreData && cryptoData.length > COINS_PER_PAGE ? (
-              <View style={styles.endOfListContainer}>
-                <Text style={[styles.endOfListText, { color: currentTheme.text.muted }]}>No more coins to load</Text>
-              </View>
-            ) : null
+          ListFooterComponent={() =>
+            debouncedSearchQuery ? null : (
+              isLoadingMore ? (
+                <View style={styles.loadingMoreContainer}>
+                  <Text style={[styles.loadingMoreText, { color: currentTheme.text.secondary }]}>Loading more coins...</Text>
+                </View>
+              ) : !hasMoreData && cryptoData.length > COINS_PER_PAGE ? (
+                <View style={styles.endOfListContainer}>
+                  <Text style={[styles.endOfListText, { color: currentTheme.text.muted }]}>No more coins to load</Text>
+                </View>
+              ) : null
+            )
           }
           // removeClippedSubviews={true} // Removed to fix swipe gestures
           maxToRenderPerBatch={10}
@@ -522,6 +610,45 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: theme.spacing.lg,
     paddingTop: theme.spacing.md,
+  },
+  // Search bar styles
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: theme.borderRadius.lg,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: theme.spacing.sm,
+    marginBottom: theme.spacing.md,
+  },
+  searchIcon: {
+    marginRight: theme.spacing.sm,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: theme.typography.sizes.body,
+    fontFamily: theme.typography.fontFamily,
+    paddingVertical: theme.spacing.xs,
+  },
+  clearButton: {
+    padding: theme.spacing.xs,
+  },
+  // No results styles
+  noResultsContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: theme.spacing.xxxl,
+  },
+  noResultsText: {
+    fontSize: theme.typography.sizes.h3,
+    fontWeight: theme.typography.weights.semibold,
+    fontFamily: theme.typography.fontFamily,
+    marginTop: theme.spacing.lg,
+  },
+  noResultsSubtext: {
+    fontSize: theme.typography.sizes.body,
+    fontFamily: theme.typography.fontFamily,
+    marginTop: theme.spacing.sm,
   },
   headerTop: {
     flexDirection: 'row',
