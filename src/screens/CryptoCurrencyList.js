@@ -6,10 +6,11 @@ import {
   Text,
   View,
   TouchableOpacity,
+  RefreshControl,
 } from "react-native";
 import CryptocurrencyListItem from "../components/CryptocurrencyListItem";
 import React, { useEffect, useState } from "react";
-import { getMarketData } from "../apis/coinGeckoAPI";
+import { getMarketData, clearCache } from "../apis/coinGeckoAPI";
 import theme from "../theme/theme";
 import { useTheme } from "../context/ThemeContext";
 
@@ -358,6 +359,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
   const [cryptoData, setCryptoData] = useState(DATA); // Start with mock data as fallback
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreData, setHasMoreData] = useState(true);
   const [totalVolume, setTotalVolume] = useState(0);
@@ -453,6 +455,33 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
     }
   };
 
+  // Pull-to-refresh handler
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      // Clear cache to force fresh data
+      clearCache();
+
+      // Reset pagination state
+      setCurrentPage(1);
+      setHasMoreData(true);
+
+      // Fetch fresh data
+      const prices = await getMarketData(COINS_PER_PAGE);
+      if (prices && prices.length > 0) {
+        setCryptoData(prices);
+        calculateTotalVolume(prices);
+        console.log('🔄 Data refreshed successfully');
+      } else {
+        console.log("⚠️ Refresh returned empty data, keeping current data");
+      }
+    } catch (error) {
+      console.log("⚠️ Refresh failed:", error.message);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
       <View style={styles.header}>
@@ -478,9 +507,9 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
         <FlatList
           data={cryptoData}
           renderItem={({ item, index }) => (
-            <CryptocurrencyListItem 
-              currency={item} 
-              index={index} 
+            <CryptocurrencyListItem
+              currency={item}
+              index={index}
               onPress={() => onCoinSelect && onCoinSelect(item)}
             />
           )}
@@ -490,6 +519,14 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
           contentContainerStyle={styles.listContent}
           onEndReached={loadMoreCoins}
           onEndReachedThreshold={0.3}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={onRefresh}
+              tintColor={currentTheme.text.secondary}
+              colors={[theme.colors.brand.primary]}
+            />
+          }
           ListFooterComponent={() => 
             isLoadingMore ? (
               <View style={styles.loadingMoreContainer}>

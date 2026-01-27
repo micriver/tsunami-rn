@@ -26,6 +26,12 @@ const setCachedData = (key, data) => {
   });
 };
 
+// Clear all cached data (useful for pull-to-refresh)
+export const clearCache = () => {
+  cache.clear();
+  console.log('🗑️ API cache cleared');
+};
+
 const rateLimitedRequest = async (requestFn) => {
   const now = Date.now();
   const timeSinceLastRequest = now - lastRequestTime;
