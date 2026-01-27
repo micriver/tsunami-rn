@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from "react-native";
-import Svg, { Polyline, Circle, Line, Text as SvgText, Rect } from "react-native-svg";
+import Svg, { Polyline, Circle, Line, Text as SvgText, Defs, LinearGradient, Stop, Path } from "react-native-svg";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, {
   useSharedValue,
@@ -196,7 +196,17 @@ const DetailChart = ({ coinId }) => {
     // Calculate min/max for scaling
     const { minPrice, maxPrice, priceRange } = getChartMetrics();
 
-    // Convert data to SVG points
+    // Determine if price is going up or down overall
+    const firstPrice = chartData[0]?.y || 0;
+    const lastPrice = chartData[chartData.length - 1]?.y || 0;
+    const priceChange = lastPrice - firstPrice;
+
+    const chartColor =
+      priceChange >= 0
+        ? currentTheme.indicators?.positive || theme.colors.indicators.positive
+        : currentTheme.indicators?.negative || theme.colors.indicators.negative;
+
+    // Convert data to SVG points for line
     const points = chartData
       .map((item, index) => {
         const x =
@@ -210,15 +220,32 @@ const DetailChart = ({ coinId }) => {
       })
       .join(" ");
 
-    // Determine if price is going up or down overall
-    const firstPrice = chartData[0]?.y || 0;
-    const lastPrice = chartData[chartData.length - 1]?.y || 0;
-    const priceChange = lastPrice - firstPrice;
+    // Create path data for gradient fill (closed path from line to bottom)
+    const pathPoints = chartData.map((item, index) => {
+      const x =
+        padding +
+        (index / (chartData.length - 1)) * (chartWidth - 2 * padding);
+      const y =
+        chartHeight -
+        padding -
+        ((item.y - minPrice) / priceRange) * (chartHeight - 2 * padding);
+      return { x, y };
+    });
 
-    const chartColor =
-      priceChange >= 0
-        ? currentTheme.indicators?.positive || theme.colors.indicators.positive
-        : currentTheme.indicators?.negative || theme.colors.indicators.negative;
+    // Build SVG path: start from first point, line through all points, then close at bottom
+    const firstPoint = pathPoints[0];
+    const lastPoint = pathPoints[pathPoints.length - 1];
+    const bottomY = chartHeight - padding;
+
+    let pathD = `M ${firstPoint.x} ${firstPoint.y}`;
+    for (let i = 1; i < pathPoints.length; i++) {
+      pathD += ` L ${pathPoints[i].x} ${pathPoints[i].y}`;
+    }
+    // Close the path by going to bottom right, then bottom left, then back to start
+    pathD += ` L ${lastPoint.x} ${bottomY} L ${firstPoint.x} ${bottomY} Z`;
+
+    // Unique gradient ID based on price change direction
+    const gradientId = priceChange >= 0 ? "positiveGradient" : "negativeGradient";
 
     const gridColor = isDarkMode
       ? "rgba(255, 255, 255, 0.1)"
@@ -236,6 +263,14 @@ const DetailChart = ({ coinId }) => {
         >
           <View style={styles.chartWrapper}>
             <Svg width={chartWidth} height={chartHeight}>
+              {/* Gradient definitions */}
+              <Defs>
+                <LinearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+                  <Stop offset="0" stopColor={chartColor} stopOpacity="0.3" />
+                  <Stop offset="1" stopColor={chartColor} stopOpacity="0" />
+                </LinearGradient>
+              </Defs>
+
               {/* Horizontal grid lines */}
               {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => {
                 const y = padding + ratio * (chartHeight - 2 * padding);
@@ -269,6 +304,12 @@ const DetailChart = ({ coinId }) => {
                   />
                 );
               })}
+
+              {/* Gradient fill below line */}
+              <Path
+                d={pathD}
+                fill={`url(#${gradientId})`}
+              />
 
               {/* Chart line */}
               <Polyline
