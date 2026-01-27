@@ -1,4 +1,5 @@
 import axios from "axios";
+import { showGlobalError, showGlobalWarning } from "../components/Toast";
 
 const BASE_URL = "https://api.coingecko.com/api/v3";
 
@@ -67,6 +68,15 @@ export const getMarketData = async (perPage = 50, startIndex = 1) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching market data:', error);
+    if (error.response?.status === 429) {
+      showGlobalWarning('Rate limit reached. Please wait a moment.');
+    } else if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      showGlobalError('Request timed out. Check your connection.');
+    } else if (!error.response) {
+      showGlobalError('Network error. Check your internet connection.');
+    } else {
+      showGlobalError('Failed to load market data.');
+    }
     throw error;
   }
 };
@@ -77,6 +87,8 @@ export const getCoinsList = async () => {
     return response.data;
   } catch (error) {
     console.error(error);
+    showGlobalError('Failed to load coins list.');
+    throw error;
   }
 };
 
@@ -89,6 +101,8 @@ export const getPriceData = async (ids) => {
     return response.data;
   } catch (error) {
     console.error(error);
+    showGlobalError('Failed to load price data.');
+    throw error;
   }
 };
 
@@ -98,6 +112,11 @@ export const getCoinData = async (id) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching coin data:', error);
+    if (error.response?.status === 429) {
+      showGlobalWarning('Rate limit reached. Please wait a moment.');
+    } else {
+      showGlobalError(`Failed to load data for ${id}.`);
+    }
     throw error;
   }
 };
@@ -123,6 +142,11 @@ export const getCoinHistoricalData = async (id, days = 30) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching historical data:', error);
+    if (error.response?.status === 429) {
+      showGlobalWarning('Rate limit reached. Please wait a moment.');
+    } else {
+      showGlobalError('Failed to load chart data.');
+    }
     throw error;
   }
 };
@@ -162,7 +186,10 @@ export const getCoinDetails = async (coinId) => {
   } catch (error) {
     console.error(`❌ Error fetching details for ${coinId}:`, error.message);
     if (error.response?.status === 429) {
+      showGlobalWarning('Rate limit reached. Please wait a moment.');
       throw new Error('Rate limit exceeded. Please wait a moment.');
+    } else {
+      showGlobalError(`Failed to load details for ${coinId}.`);
     }
     throw error;
   }
@@ -188,6 +215,11 @@ export const getWatchlistData = async (coinIds) => {
     return response.data;
   } catch (error) {
       console.error('Error fetching watchlist data:', error);
+      if (error.response?.status === 429) {
+        showGlobalWarning('Rate limit reached. Please wait a moment.');
+      } else {
+        showGlobalError('Failed to load watchlist data.');
+      }
       throw error;
   }
 };
@@ -218,6 +250,11 @@ export const getFearGreedIndex = async () => {
     });
   } catch (error) {
     console.error('❌ Error fetching Fear & Greed Index:', error.message);
+    if (error.response?.status === 429) {
+      showGlobalWarning('Rate limit reached. Please wait a moment.');
+    } else {
+      showGlobalError('Failed to load Fear & Greed Index.');
+    }
     throw error;
   }
 };
