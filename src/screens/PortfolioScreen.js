@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
 import theme from '../theme/theme';
 import ConnectWalletModal from '../components/ConnectWalletModal';
+import { PortfolioSkeleton } from '../components/SkeletonLoader';
 
 // Demo holdings data
 const DEMO_HOLDINGS = [
@@ -122,8 +123,21 @@ const HoldingItem = ({ holding, currentTheme }) => {
 export default function PortfolioScreen() {
   const { isDarkMode } = useTheme();
   const currentTheme = isDarkMode ? theme.colors.dark : theme.colors;
-  const [holdings] = useState(DEMO_HOLDINGS);
+  const [holdings, setHoldings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isWalletModalVisible, setIsWalletModalVisible] = useState(false);
+
+  // Simulate loading holdings data
+  useEffect(() => {
+    const loadHoldings = async () => {
+      setIsLoading(true);
+      // Simulate network delay
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setHoldings(DEMO_HOLDINGS);
+      setIsLoading(false);
+    };
+    loadHoldings();
+  }, []);
 
   const handleConnectWallet = () => {
     setIsWalletModalVisible(true);
@@ -142,6 +156,33 @@ export default function PortfolioScreen() {
 
   // Check if there are holdings to display
   const hasHoldings = holdings.length > 0;
+
+  // Show skeleton while loading
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>
+        <PortfolioSkeleton />
+        <View style={styles.buttonSection}>
+          <TouchableOpacity
+            style={styles.primaryButton}
+            onPress={handleConnectWallet}
+          >
+            <Ionicons
+              name="scan-outline"
+              size={20}
+              color="#ffffff"
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.primaryButtonText}>Connect Wallet</Text>
+          </TouchableOpacity>
+        </View>
+        <ConnectWalletModal
+          visible={isWalletModalVisible}
+          onClose={handleCloseWalletModal}
+        />
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: currentTheme.background.primary }]}>

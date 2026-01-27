@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import CryptocurrencyListItem from "../components/CryptocurrencyListItem";
+import { MarketListSkeleton } from "../components/SkeletonLoader";
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { getMarketData } from "../apis/coinGeckoAPI";
 import theme from "../theme/theme";
@@ -544,9 +545,7 @@ const CryptoCurrencyList = ({ onCoinSelect }) => {
         </View>
       </View>
       {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <Text style={[styles.loadingText, { color: currentTheme.text.secondary }]}>Loading crypto data...</Text>
-        </View>
+        <MarketListSkeleton count={10} />
       ) : filteredData.length === 0 ? (
         <View style={styles.noResultsContainer}>
           <Ionicons
