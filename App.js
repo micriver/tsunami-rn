@@ -23,9 +23,10 @@ import { MaterialIcons } from "@expo/vector-icons";
 import theme from "./src/theme/theme";
 import { ThemeProvider, useTheme } from "./src/context/ThemeContext";
 import { WatchlistProvider } from "./src/context/WatchlistContext";
+import { AuthProvider, useAuth } from "./src/context/AuthContext";
 
 function AppContent() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const { isLoggedIn, isLoading: isAuthLoading, login, logout } = useAuth();
   const [selectedCoin, setSelectedCoin] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSettingsVisible, setIsSettingsVisible] = useState(false);
@@ -51,12 +52,12 @@ function AppContent() {
     }
   }, [splashFinished]);
 
-  const handleLogin = () => {
-    setIsLoggedIn(true);
+  const handleLogin = async () => {
+    await login();
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await logout();
     setSelectedCoin(null);
     setIsModalVisible(false);
     setIsSettingsVisible(false);
@@ -218,126 +219,18 @@ function AppContent() {
       )}
     </View>
   );
-
-  if (!isLoggedIn) {
-    return <LoginScreen onLogin={handleLogin} />;
-  }
-
-  return (
-    <Animated.View
-      style={[
-        styles.background,
-        {
-          backgroundColor: currentTheme.background.primary,
-          opacity: fadeAnim,
-        },
-      ]}
-    >
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.header}>
-          <View style={styles.headerLeft}>
-            <Text
-              style={[
-                styles.title,
-                {
-                  color:
-                    currentTheme.brand?.primary || currentTheme.brand.primary,
-                },
-              ]}
-            >
-              TSUNAMI
-            </Text>
-          </View>
-          <View style={styles.headerRight}>
-            <TouchableOpacity onPress={toggleTheme} style={styles.headerIcon}>
-              <MaterialIcons
-                name={isDarkMode ? "light-mode" : "dark-mode"}
-                size={24}
-                color={
-                  currentTheme.text?.secondary || theme.colors.text.secondary
-                }
-              />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleOpenSettings}
-              style={styles.headerIcon}
-            >
-              <MaterialIcons
-                name='account-circle'
-                size={32}
-                color={
-                  currentTheme.accent?.orange || theme.colors.accent.orange
-                }
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* News Ticker moved to NewsScreen */}
-
-        <View style={styles.container}>
-          <NavigationContainer>
-            <MainNavigator onCoinSelect={handleCoinSelect} />
-          </NavigationContainer>
-          <StatusBar style={isDarkMode ? "light" : "dark"} />
-        </View>
-      </SafeAreaView>
-
-      {/* Coin Detail Modal */}
-      <Modal
-        visible={isModalVisible}
-        animationType='none'
-        presentationStyle='overFullScreen'
-        transparent={true}
-        onRequestClose={handleCloseModal}
-      >
-        <CoinDetailScreen coin={selectedCoin} onClose={handleCloseModal} />
-      </Modal>
-
-      {/* Settings Modal */}
-      <Modal
-        visible={isSettingsVisible}
-        animationType='none'
-        presentationStyle='overFullScreen'
-        transparent={true}
-        onRequestClose={handleCloseSettings}
-      >
-        <SettingsScreen
-          onClose={handleCloseSettings}
-          onLogout={handleLogout}
-          isDarkMode={isDarkMode}
-          onThemeToggle={toggleTheme}
-          onOpenWatchlist={handleOpenWatchlist}
-        />
-      </Modal>
-
-      {/* My Watchlist Modal */}
-      <Modal
-        visible={isWatchlistVisible}
-        animationType='slide'
-        presentationStyle='pageSheet'
-        onRequestClose={handleCloseWatchlist}
-      >
-        <MyWatchlistScreen
-          onCoinSelect={(coin) => {
-            handleCloseWatchlist();
-            handleCoinSelect(coin);
-          }}
-          onClose={handleCloseWatchlist}
-        />
-      </Modal>
-    </Animated.View>
-  );
 }
 
 export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <ThemeProvider>
-        <WatchlistProvider>
-          <AppContent />
-        </WatchlistProvider>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <WatchlistProvider>
+            <AppContent />
+          </WatchlistProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </GestureHandlerRootView>
   );
 }

@@ -327,6 +327,50 @@ const SettingsScreen = ({ onClose, onLogout, isDarkMode, onThemeToggle, onOpenWa
           />
         </View>
 
+        {/* Logout Section */}
+        <View style={styles.section}>
+          <TouchableOpacity
+            style={[
+              styles.settingsItem,
+              styles.logoutItem,
+              { backgroundColor: currentTheme.background.secondary },
+            ]}
+            onPress={() => {
+              Alert.alert(
+                "Logout",
+                "Are you sure you want to logout?",
+                [
+                  { text: "Cancel", style: "cancel" },
+                  {
+                    text: "Logout",
+                    style: "destructive",
+                    onPress: () => {
+                      handleClose();
+                      setTimeout(() => onLogout && onLogout(), 300);
+                    }
+                  },
+                ]
+              );
+            }}
+          >
+            <View style={styles.settingsItemLeft}>
+              <MaterialIcons
+                name='logout'
+                size={24}
+                color={currentIndicators.negative}
+                style={styles.settingsIcon}
+              />
+              <View style={styles.settingsTextContainer}>
+                <Text
+                  style={[styles.settingsTitle, { color: currentIndicators.negative }]}
+                >
+                  Logout
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+
         {/* Bottom spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
